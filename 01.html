@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Zajęcia 1 | Muzyka algorytmiczna</title>
+        <style>
+        html {
+            color-scheme: light dark;
+        }
+        body {
+            font-family: system-ui, sans-serif;
+            line-height: 1.6;
+            margin-inline: auto;
+            max-width: 80ch;
+        }
+        </style>
+  </head>
+  <body>
+    <h1>Zajęcia 1 (2024-10-02)</h1>
+    <h2>Cel zajęć</h2>
+    <ol>
+      <li>Instalacja środowiska programistycznego Sonic Pi</li>
+      <li>Zapoznanie się z podstawowami języka Ruby</li>
+      <li>Tworzenie prostych utworów z wykorzystaniem Sonic Pi</li>
+    </ol>
+
+    <h2>Zadanie</h2>
+    <p>Przygotowanie krótkiego utworu (~30s) w środowisku Sonic Pi, spełniającego następujące wymagania:</p>
+    <ol>
+      <li>Wykorzystuje funkcje: <code>live_loop</code>, <code>sleep</code>, <code>play</code></li>
+      <li>Modyfikuje tworzone dźwięki przez dodatkowe parametry funkcji play (np. amp:)</li>
+      <li>Wykorzystuje ten sam dźwięk w różnych oktawach</li>
+    </ol>
+
+    <h2>Przykładowe fragmenty kodu w Sonic Pi</h2>
+
+    <h3>Dźwięki z wykorzystaniem notacji</h3>
+<pre><code>play :C4
+sleep 1
+play :E4
+slep 1
+play :G4</code></pre>
+
+    <h3>Dźwięki określone liczbowo</h3>
+<pre><code>play 60
+sleep 1
+play 64
+sleep 1
+play 67</code></pre>
+
+<h3>Modyfikacja pojedynczego dźwięku</h3>
+<pre><code>play :c4, attack: 1, decay: 1, sustain: 1, release: 1</code></pre>
+
+    <h3>Akord</h3>
+<pre><code>play :c4
+play :e4
+play :g4
+sleep 1</code></pre>
+
+<h3>Zmiana oktawy dźwięku</h3>
+<pre><code>play note(:c4, octave: 3)</code></pre>
+
+<h3>Odczytanie globalnego tempa</h3>
+<pre><code>print current_bpm</code></pre>
+
+<h3>Zmiana globalnego tempa</h3>
+<pre><code>use_bpm 180</code></pre>
+
+<h3>Zmiana tempa w kontekście</h3>
+<pre><code>with_bpm 180 do
+  play :c4
+  sleep 1
+end</code></pre>
+
+<h3>Zmiana globalnego syntezatora</h3>
+<pre><code>use_synth :dsaw</code></pre>
+
+<p>(podobnie <code>with_synth</code>)</p>
+  </body>
+</html>
+
