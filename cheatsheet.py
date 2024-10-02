@@ -60,7 +60,7 @@ else:
         html {{
             color-scheme: light dark;
         }}
-        body {{
+        main {{
             font-family: system-ui, sans-serif;
             line-height: 1.6;
             display: flex;
@@ -72,7 +72,12 @@ else:
         </style>
 	</head>
 	<body>
-      {content}
+        <header style="text-align: center; margin-bottom: 1em">
+			<a href="/">Muzyka algorytmiczna</a>
+		</header>
+        <main>
+          {content}
+        </main>
 	</body>
 </html>
 """.format(content='\n'.join(gen())), file=f)
