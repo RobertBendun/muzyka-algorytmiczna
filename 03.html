@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Zajęcia 3 | Muzyka algorytmiczna</title>
+        <style>
+        html {
+            color-scheme: light dark;
+        }
+        body {
+            font-family: system-ui, sans-serif;
+            line-height: 1.6;
+            margin-inline: auto;
+            max-width: 80ch;
+        }
+        h2 {
+          border-top: 1px solid;
+          border-bottom: 1px solid;
+        }
+				dt {
+					font-weight: bold;
+				}
+        </style>
+  </head>
+  <body>
+    <header>
+      <a href="/">Muzyka algorytmiczna</a>
+    </header>
+    <h1>Zajęcia 3 (2024-10-16)</h1>
+
+    <ul>
+      <li><a href="#goal">Cel zajęć</a></li>
+      <li><a href="#todo">Zadanie</a></li>
+			<li><a href="#code">Zrzut kodu z zajęć</a></li>
+			<li><a href="#arrays">Tablicowe struktury danych w Sonic Pi</a></li>
+			<li><a href="#synchronize">Synchronizacja, <code>cue</code>,<code>sync</code></a></li>
+			<li><a href="#scale">Skale</a></li>
+    </ul>
+
+    <h2 id="goal">Cel zajęć</h2>
+    <ol>
+			<li>Tablicowe struktury danych w Sonic Pi</li>
+			<li>Zarządzanie przepływem programu w Sonic Pi</li>
+			<li>Tworzenie własnych skal</li>
+    </ol>
+
+    <h2 id="todo">Zadanie</h2>
+
+    <p>Przygotowanie krótkiego utworu (~30s) w środowisku Sonic Pi, spełniającego następujące wymagania:</p>
+    <ol>
+			<li>5 wybranych dźwięków we własnej skali</li>
+			<li>wykorzystuje mechanizmy synchronizacji</li>
+			<li>wykorzystuje tablicowych struktur danych Sonic Pi</li>
+    </ol>
+
+		<h2 id="code">Zrzut kodu z zajęć</h2>
+
+		<p>Plik: TBD</p>
+
+		<h2 id="arrays">Tablicowe struktury danych w Sonic Pi</h2>
+		<p>Dodatkowe informacje: <a href="/cheatsheet.html">porównanie Pythona i Rubiego</a></p>
+
+		<h3>Sonic Pi: wektory</h3>
+		<p>Odpowiednik tablic z dodatkowymi metodami.</p>
+
+		<p>Tworzone funkcją <code>vector</code></p>
+
+		<details>
+			<summary>Wspierane operacje</summary>
+			<dl>
+				<dt>+</dt><dd>dodaje liczbę do elementów / łączy wektory</dd>
+				<dt>-</dt><dd>odejmuje liczbę od elementów / róznica zbiorów</dd>
+				<dt>*</dt><dd>powtarza elementy n razy</dd>
+				<dt>all?</dt><dd>czy predykat jest prawdziwy dla każdego z elementów</dd>
+				<dt>any?</dt><dd>czy predykat jest prawdziwy dla któregokolwiek z elementów</dd>
+				<dt>butlast</dt><dd>elementy poza ostatnim</dd>
+				<dt>choose</dt><dd>wybierz losowy element</dd>
+				<dt>drop</dt><dd>pomiń n elementów</dd>
+				<dt>drop_last</dt><dd>pomiń n ostatnich elementów</dd>
+				<dt>each</dt><dd>iteruj po elementach</dd>
+				<dt>each_with_index</dt><dd>iteruj po elementach z indeksem</dd>
+				<dt>empty?</dt><dd>czy wektor jest pusty</dd>
+				<dt>filter</dt><dd>filtruj elementy według predykatu</dd>
+				<dt>first</dt><dd>pierwsze n elementów</dd>
+				<dt>flat_map</dt><dd>złącz wyniki iteracji w wektor</dd>
+				<dt>flatten</dt><dd>złącz elementy w jedną listę</dd>
+				<dt>last</dt><dd>zwróć n ostatnich elementów</dd>
+				<dt>length</dt><dd>długość wektora</dd>
+				<dt>map</dt><dd>iteruj elementy, tworząc wektor z wyników iteracji</dd>
+				<dt>max</dt><dd>maksimum</dd>
+				<dt>min</dt><dd>minimum</dd>
+				<dt>mirror</dt><dd>złącz wektor z jego lustrzanym odbiciem</dd>
+				<dt>ramp</dt><dd>Zwróć wektor ograniczony z elementów wektora</dd>
+				<dt>reflect</dt><dd>złącz wektor z jego lustrzanym odbiciem, nie powtarzaj środkowego elementu</dd>
+				<dt>repeat</dt><dd>złącz wektor n razy</dd>
+				<dt>reverse</dt><dd>odwróć kolejność elementów w wektorze</dd>
+				<dt>ring</dt><dd>zwróć pierśćień z elementów wektora</dd>
+				<dt>rotate</dt><dd>przesuń elementy wektora</dd>
+				<dt>scale</dt><dd>skaluj elementy (mnóż po elementach)</dd>
+				<dt>shuffle</dt><dd>losowa permutacja elementów</dd>
+				<dt>size</dt><dd>rozmiar wektora</dd>
+				<dt>sort</dt><dd>zwróć elementy posortowane</dd>
+				<dt>stretch</dt><dd>powtórz elementy obok siebie</dd>
+				<dt>take</dt><dd>weź n elementów</dd>
+				<dt>take_last</dt><dd>weź n elementów od końca</dd>
+				<dt>uniq</dt><dd>zwróć elementy bez powtórzeń</dd>
+			</dl>
+		</details>
+
+
+		<h3>Sonic Pi: pierścienie</h3>
+		<p>Pierścień <code>p</code> to n-elementowy wektor, gdzie <code>p[i] == p[i%n]</code>.</p>
+
+		<p>Tworzone funkcją <code>ring</code></p>
+
+		<h3>Sonic Pi: wektor ograniczony</h3>
+		<p>Wektor ograniczony <code>v</code> to n-elementowy wektor, gdzie:</p>
+		<ul>
+			<li>dla <code>i &lt; 0</code>, ,<code>p[i] &equiv; p[0]</code>,</li>
+			<li>dla <code>i &ge; n</code>, ,<code>p[i] &equiv; p[n-1]</code>.</li>
+		</ul>
+
+		<p>Tworzony funkcją <code>ramp</code></p>
+
+		<h3>Przykładowe wykorzystanie wektorów</h3>
+
+<pre><code>use_synth :piano
+
+times = (1..8).map do |x|
+  1r / x
+end.ring.mirror
+
+play_pattern_timed (ring :f4, :g4).repeat(times.length/2), times</pre></code>
+
+		<h2 id="synchronize">Synchronizacja, <code>cue</code>,<code>sync</code></h2>
+
+		<p>Kontynuacja <a href="02.html#threads">materiału z poprzednich zajęć</a>.</p>
+
+		<h3>Problem sekcji krytycznej</h3>
+
+<pre><code>in_thread do
+  loop do
+    play :c5
+    sleep 1
+    cue :second
+    sync :first
+  end
+end
+
+in_thread do
+  loop do
+    play :c4
+    sleep 1
+    cue :first
+    sync :second
+  end
+end</code></pre>
+
+	<h3>Problemy synchronizacji z <code>cue</code> i <code>sync</code></h3>
+
+	<p>Aby <code>cue</code> osiągnęło pożądany efekt, musi być <code>sync</code>, które aktywnie oczekuje na <code>cue</code>.
+	Komunikaty <code>cue</code> znikają jeśli nie ma oczekującego na nie <code>sync</code>.
+	Możliwe rozwiązania:</p>
+<ol>
+	<li>Dodanie mikroprzerw w celu zwiększenia szansy na wykonanie <code>sync</code> przed <code>cue</code> (przykład poniżej)</li>
+	<li>Uruchomienie utworu z wyprzedzeniem (przykład na zajęciach).</li>
+</ol>
+
+<pre><code>in_thread do
+  loop do
+    cue :ready1
+    sync :a
+    4.times do
+      play :c4, duration: 0.5
+      play :e4, duration: 0.5
+      play :g4, duration: 0.5
+      sleep 0.5
+    end
+    cue :done
+  end
+end
+
+in_thread do
+  loop do
+    cue :ready2
+    sync :b
+    play_pattern_timed (ring :c5, :e5, :g5), 0.5
+    cue :done
+  end
+end
+
+sync :ready1
+sync :ready2
+sleep 0.0001
+loop do
+  cue (ring :a, :b).tick
+  sync :done
+end</pre></code>
+
+<h2 id="scale">Skale</h2>
+
+<p>Skala - szereg dźwięków, zazwyczaj pomiędzy dźwiękiem, a jego oktawą.
+Oktawa - dźwięk, o dwukrotnie wyższej częstotliwości.</p>
+
+<p><a target="_blank" href="https://oeis.org/">Encyklopedia ciągów liczbowych</a></p>
+
+<h3>Skale wbudowane w Sonic Pi</h3>
+
+<p><code>scale</code> zwraca skalę w postaci pierścienia. <code>scale_names</code> zwraca listę skal w postaci pierścienia.</p>
+
+<pre><code>scale :C4, :major # &equiv; (ring 60, 62, 64, 65, 67, 69, 71, 72)
+scale :C4, :minor # &equiv; (ring 60, 62, 63, 65, 67, 68, 70, 72)
+scale :C4, :egyptian # &equiv; (ring 60, 62, 65, 67, 70, 72)</code></pre>
+
+<h3>Skala pitagorejska</h3>
+
+<p><a target="_blank" href="https://en.wikipedia.org/wiki/Pythagorean_tuning">Źródło odległości między dźwiękami</a></p>
+
+<pre><code>pit = [0, 203.91, 294.13, 498.04, 701.96, 905.87, 996.09].map do |x| note(:d4) + x/100 end
+D1, E1, F1, G1, A1, B1, C1 = pit
+tet = [:d4, :e4, :f4, :g4, :a4, :b4, :c5]
+
+pit.zip(tet).each do |a, b|
+  print a, b
+  play_pattern_timed (ring a, b), 1
+end
+
+# Można krócej:
+# play_pattern_timed (ring pit.zip(tet)).flatten, 1</code></pre>
+
+<h3>Generowanie skal równomiernie temperowanych</h3>
+
+<pre><code>def równomiernie_temperowany(start, n)
+  sounds = []
+  n.times do |i|
+    sounds &lt;&lt; hz_to_midi(midi_to_hz(start) * (2 ** (1r/n)) ** i)
+  end
+  sounds.ring
+end
+
+S, K, A, L, A = równomiernie_temperowany(:a4, 5)
+play S
+play A
+sleep 1
+
+tet19 = równomiernie_temperowany(:a4, 19)
+play_pattern_timed tet19, 1/8r, release: 0.1
+sleep 1</code></pre>
+
+  </body>
+</html>
+
