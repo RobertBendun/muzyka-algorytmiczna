@@ -36,6 +36,7 @@
 			<li><a href="#arrays">Tablicowe struktury danych w Sonic Pi</a></li>
 			<li><a href="#synchronize">Synchronizacja, <code>cue</code>,<code>sync</code></a></li>
 			<li><a href="#scale">Skale</a></li>
+			<li><a href="#stop">Zatrzymywanie fragmentu utworu (po zajęciach)</a></li>
     </ul>
 
     <h2 id="goal">Cel zajęć</h2>
@@ -56,7 +57,7 @@
 
 		<h2 id="code">Zrzut kodu z zajęć</h2>
 
-		<p>Plik: TBD</p>
+		<p>Plik: <a href="artifacts/03.rb">03.rb</a></p>
 
 		<h2 id="arrays">Tablicowe struktury danych w Sonic Pi</h2>
 		<p>Dodatkowe informacje: <a href="/cheatsheet.html">porównanie Pythona i Rubiego</a></p>
@@ -248,6 +249,82 @@ tet19 = równomiernie_temperowany(:a4, 19)
 play_pattern_timed tet19, 1/8r, release: 0.1
 sleep 1</code></pre>
 
+<h2 id="stop">Zatrzymywanie fragmentu utworu (po zajęciach)</h2>
+
+<p>Cel: pętla, której wykonanie można zatrzymać i wznowić spoza pętli.
+Implementacja wykorzystuje mechanizm omówiony na przyszłych zajęciach.</p>
+
+<pre><code>
+</code></pre>
+
+<h3>Podstawowe zatrzymanie</h3>
+
+<p>W jednym panelu:</p>
+
+<pre><code>set :wait, false
+
+in_thread(name: :foo) do
+  loop do
+    if get[:wait] then sync :continue end
+    play :c4
+    sleep 1
+  end
+end</code></pre>
+
+
+
+<p>W innym panelu, by zatrzymać:</p>
+<pre><code>set :wait, true</code></pre>
+
+<p>W innym panelu (może być ten sam w którym zatrzymano), by uruchomić ponownie:</p>
+<pre><code>set :wait, false
+cue :continue</code></pre>
+
+<h3>Z dodatkowym oczekiwaniem na realizację przerwania pętli</h3>
+
+<pre><code>set :wait, false
+
+in_thread(name: :foo) do
+  loop do
+    if get[:wait] then
+      cue :stopped
+      sync :continue
+    end
+    play :c4
+    sleep 1
+  end
+end
+
+in_thread do
+	# Fragment wykonuje się razem z pętlą powyżej
+	2.times do
+		play :e4
+		play :g4
+		sleep 1
+	end
+
+  set :wait, true
+  sync :stopped
+
+	# Fragment wykonuje się jak pętla zatrzymała wykonywanie
+	2.times do
+		play :c2
+		play :e2
+		play :g2
+		sleep 1
+	end
+
+  set :wait, false
+  cue :continue
+
+	# Fragment wykonuje się jak pętla wznowiła wykonywanie
+	3.times do
+		play :e4
+		sleep 1
+		play :g4
+		sleep 1
+	end
+end</code></pre>
   </body>
 </html>
 
