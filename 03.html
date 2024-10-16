@@ -18,9 +18,9 @@
           border-top: 1px solid;
           border-bottom: 1px solid;
         }
-				dt {
-					font-weight: bold;
-				}
+        dt {
+          font-weight: bold;
+        }
         </style>
   </head>
   <body>
@@ -32,99 +32,99 @@
     <ul>
       <li><a href="#goal">Cel zajęć</a></li>
       <li><a href="#todo">Zadanie</a></li>
-			<li><a href="#code">Zrzut kodu z zajęć</a></li>
-			<li><a href="#arrays">Tablicowe struktury danych w Sonic Pi</a></li>
-			<li><a href="#synchronize">Synchronizacja, <code>cue</code>,<code>sync</code></a></li>
-			<li><a href="#scale">Skale</a></li>
-			<li><a href="#stop">Zatrzymywanie fragmentu utworu (po zajęciach)</a></li>
+      <li><a href="#code">Zrzut kodu z zajęć</a></li>
+      <li><a href="#arrays">Tablicowe struktury danych w Sonic Pi</a></li>
+      <li><a href="#synchronize">Synchronizacja, <code>cue</code>,<code>sync</code></a></li>
+      <li><a href="#scale">Skale</a></li>
+      <li><a href="#stop">Zatrzymywanie fragmentu utworu (po zajęciach)</a></li>
     </ul>
 
     <h2 id="goal">Cel zajęć</h2>
     <ol>
-			<li>Tablicowe struktury danych w Sonic Pi</li>
-			<li>Zarządzanie przepływem programu w Sonic Pi</li>
-			<li>Tworzenie własnych skal</li>
+      <li>Tablicowe struktury danych w Sonic Pi</li>
+      <li>Zarządzanie przepływem programu w Sonic Pi</li>
+      <li>Tworzenie własnych skal</li>
     </ol>
 
     <h2 id="todo">Zadanie</h2>
 
     <p>Przygotowanie krótkiego utworu (~30s) w środowisku Sonic Pi, spełniającego następujące wymagania:</p>
     <ol>
-			<li>5 wybranych dźwięków we własnej skali</li>
-			<li>wykorzystuje mechanizmy synchronizacji</li>
-			<li>wykorzystuje tablicowych struktur danych Sonic Pi</li>
+      <li>5 wybranych dźwięków we własnej skali</li>
+      <li>wykorzystuje mechanizmy synchronizacji</li>
+      <li>wykorzystuje tablicowych struktur danych Sonic Pi</li>
     </ol>
 
-		<h2 id="code">Zrzut kodu z zajęć</h2>
+    <h2 id="code">Zrzut kodu z zajęć</h2>
 
-		<p>Plik: <a href="artifacts/03.rb">03.rb</a></p>
+    <p>Plik: <a href="artifacts/03.rb">03.rb</a></p>
 
-		<h2 id="arrays">Tablicowe struktury danych w Sonic Pi</h2>
-		<p>Dodatkowe informacje: <a href="/cheatsheet.html">porównanie Pythona i Rubiego</a></p>
+    <h2 id="arrays">Tablicowe struktury danych w Sonic Pi</h2>
+    <p>Dodatkowe informacje: <a href="/cheatsheet.html">porównanie Pythona i Rubiego</a></p>
 
-		<h3>Sonic Pi: wektory</h3>
-		<p>Odpowiednik tablic z dodatkowymi metodami.</p>
+    <h3>Sonic Pi: wektory</h3>
+    <p>Odpowiednik tablic z dodatkowymi metodami.</p>
 
-		<p>Tworzone funkcją <code>vector</code></p>
+    <p>Tworzone funkcją <code>vector</code></p>
 
-		<details>
-			<summary>Wspierane operacje</summary>
-			<dl>
-				<dt>+</dt><dd>dodaje liczbę do elementów / łączy wektory</dd>
-				<dt>-</dt><dd>odejmuje liczbę od elementów / róznica zbiorów</dd>
-				<dt>*</dt><dd>powtarza elementy n razy</dd>
-				<dt>all?</dt><dd>czy predykat jest prawdziwy dla każdego z elementów</dd>
-				<dt>any?</dt><dd>czy predykat jest prawdziwy dla któregokolwiek z elementów</dd>
-				<dt>butlast</dt><dd>elementy poza ostatnim</dd>
-				<dt>choose</dt><dd>wybierz losowy element</dd>
-				<dt>drop</dt><dd>pomiń n elementów</dd>
-				<dt>drop_last</dt><dd>pomiń n ostatnich elementów</dd>
-				<dt>each</dt><dd>iteruj po elementach</dd>
-				<dt>each_with_index</dt><dd>iteruj po elementach z indeksem</dd>
-				<dt>empty?</dt><dd>czy wektor jest pusty</dd>
-				<dt>filter</dt><dd>filtruj elementy według predykatu</dd>
-				<dt>first</dt><dd>pierwsze n elementów</dd>
-				<dt>flat_map</dt><dd>złącz wyniki iteracji w wektor</dd>
-				<dt>flatten</dt><dd>złącz elementy w jedną listę</dd>
-				<dt>last</dt><dd>zwróć n ostatnich elementów</dd>
-				<dt>length</dt><dd>długość wektora</dd>
-				<dt>map</dt><dd>iteruj elementy, tworząc wektor z wyników iteracji</dd>
-				<dt>max</dt><dd>maksimum</dd>
-				<dt>min</dt><dd>minimum</dd>
-				<dt>mirror</dt><dd>złącz wektor z jego lustrzanym odbiciem</dd>
-				<dt>ramp</dt><dd>Zwróć wektor ograniczony z elementów wektora</dd>
-				<dt>reflect</dt><dd>złącz wektor z jego lustrzanym odbiciem, nie powtarzaj środkowego elementu</dd>
-				<dt>repeat</dt><dd>złącz wektor n razy</dd>
-				<dt>reverse</dt><dd>odwróć kolejność elementów w wektorze</dd>
-				<dt>ring</dt><dd>zwróć pierśćień z elementów wektora</dd>
-				<dt>rotate</dt><dd>przesuń elementy wektora</dd>
-				<dt>scale</dt><dd>skaluj elementy (mnóż po elementach)</dd>
-				<dt>shuffle</dt><dd>losowa permutacja elementów</dd>
-				<dt>size</dt><dd>rozmiar wektora</dd>
-				<dt>sort</dt><dd>zwróć elementy posortowane</dd>
-				<dt>stretch</dt><dd>powtórz elementy obok siebie</dd>
-				<dt>take</dt><dd>weź n elementów</dd>
-				<dt>take_last</dt><dd>weź n elementów od końca</dd>
-				<dt>uniq</dt><dd>zwróć elementy bez powtórzeń</dd>
-			</dl>
-		</details>
+    <details>
+      <summary>Wspierane operacje</summary>
+      <dl>
+        <dt>+</dt><dd>dodaje liczbę do elementów / łączy wektory</dd>
+        <dt>-</dt><dd>odejmuje liczbę od elementów / róznica zbiorów</dd>
+        <dt>*</dt><dd>powtarza elementy n razy</dd>
+        <dt>all?</dt><dd>czy predykat jest prawdziwy dla każdego z elementów</dd>
+        <dt>any?</dt><dd>czy predykat jest prawdziwy dla któregokolwiek z elementów</dd>
+        <dt>butlast</dt><dd>elementy poza ostatnim</dd>
+        <dt>choose</dt><dd>wybierz losowy element</dd>
+        <dt>drop</dt><dd>pomiń n elementów</dd>
+        <dt>drop_last</dt><dd>pomiń n ostatnich elementów</dd>
+        <dt>each</dt><dd>iteruj po elementach</dd>
+        <dt>each_with_index</dt><dd>iteruj po elementach z indeksem</dd>
+        <dt>empty?</dt><dd>czy wektor jest pusty</dd>
+        <dt>filter</dt><dd>filtruj elementy według predykatu</dd>
+        <dt>first</dt><dd>pierwsze n elementów</dd>
+        <dt>flat_map</dt><dd>złącz wyniki iteracji w wektor</dd>
+        <dt>flatten</dt><dd>złącz elementy w jedną listę</dd>
+        <dt>last</dt><dd>zwróć n ostatnich elementów</dd>
+        <dt>length</dt><dd>długość wektora</dd>
+        <dt>map</dt><dd>iteruj elementy, tworząc wektor z wyników iteracji</dd>
+        <dt>max</dt><dd>maksimum</dd>
+        <dt>min</dt><dd>minimum</dd>
+        <dt>mirror</dt><dd>złącz wektor z jego lustrzanym odbiciem</dd>
+        <dt>ramp</dt><dd>Zwróć wektor ograniczony z elementów wektora</dd>
+        <dt>reflect</dt><dd>złącz wektor z jego lustrzanym odbiciem, nie powtarzaj środkowego elementu</dd>
+        <dt>repeat</dt><dd>złącz wektor n razy</dd>
+        <dt>reverse</dt><dd>odwróć kolejność elementów w wektorze</dd>
+        <dt>ring</dt><dd>zwróć pierśćień z elementów wektora</dd>
+        <dt>rotate</dt><dd>przesuń elementy wektora</dd>
+        <dt>scale</dt><dd>skaluj elementy (mnóż po elementach)</dd>
+        <dt>shuffle</dt><dd>losowa permutacja elementów</dd>
+        <dt>size</dt><dd>rozmiar wektora</dd>
+        <dt>sort</dt><dd>zwróć elementy posortowane</dd>
+        <dt>stretch</dt><dd>powtórz elementy obok siebie</dd>
+        <dt>take</dt><dd>weź n elementów</dd>
+        <dt>take_last</dt><dd>weź n elementów od końca</dd>
+        <dt>uniq</dt><dd>zwróć elementy bez powtórzeń</dd>
+      </dl>
+    </details>
 
 
-		<h3>Sonic Pi: pierścienie</h3>
-		<p>Pierścień <code>p</code> to n-elementowy wektor, gdzie <code>p[i] == p[i%n]</code>.</p>
+    <h3>Sonic Pi: pierścienie</h3>
+    <p>Pierścień <code>p</code> to n-elementowy wektor, gdzie <code>p[i] == p[i%n]</code>.</p>
 
-		<p>Tworzone funkcją <code>ring</code></p>
+    <p>Tworzone funkcją <code>ring</code></p>
 
-		<h3>Sonic Pi: wektor ograniczony</h3>
-		<p>Wektor ograniczony <code>v</code> to n-elementowy wektor, gdzie:</p>
-		<ul>
-			<li>dla <code>i &lt; 0</code>, ,<code>p[i] &equiv; p[0]</code>,</li>
-			<li>dla <code>i &ge; n</code>, ,<code>p[i] &equiv; p[n-1]</code>.</li>
-		</ul>
+    <h3>Sonic Pi: wektor ograniczony</h3>
+    <p>Wektor ograniczony <code>v</code> to n-elementowy wektor, gdzie:</p>
+    <ul>
+      <li>dla <code>i &lt; 0</code>, ,<code>p[i] &equiv; p[0]</code>,</li>
+      <li>dla <code>i &ge; n</code>, ,<code>p[i] &equiv; p[n-1]</code>.</li>
+    </ul>
 
-		<p>Tworzony funkcją <code>ramp</code></p>
+    <p>Tworzony funkcją <code>ramp</code></p>
 
-		<h3>Przykładowe wykorzystanie wektorów</h3>
+    <h3>Przykładowe wykorzystanie wektorów</h3>
 
 <pre><code>use_synth :piano
 
@@ -134,11 +134,11 @@ end.ring.mirror
 
 play_pattern_timed (ring :f4, :g4).repeat(times.length/2), times</pre></code>
 
-		<h2 id="synchronize">Synchronizacja, <code>cue</code>,<code>sync</code></h2>
+    <h2 id="synchronize">Synchronizacja, <code>cue</code>,<code>sync</code></h2>
 
-		<p>Kontynuacja <a href="02.html#threads">materiału z poprzednich zajęć</a>.</p>
+    <p>Kontynuacja <a href="02.html#threads">materiału z poprzednich zajęć</a>.</p>
 
-		<h3>Problem sekcji krytycznej</h3>
+    <h3>Problem sekcji krytycznej</h3>
 
 <pre><code>in_thread do
   loop do
@@ -158,14 +158,14 @@ in_thread do
   end
 end</code></pre>
 
-	<h3>Problemy synchronizacji z <code>cue</code> i <code>sync</code></h3>
+  <h3>Problemy synchronizacji z <code>cue</code> i <code>sync</code></h3>
 
-	<p>Aby <code>cue</code> osiągnęło pożądany efekt, musi być <code>sync</code>, które aktywnie oczekuje na <code>cue</code>.
-	Komunikaty <code>cue</code> znikają jeśli nie ma oczekującego na nie <code>sync</code>.
-	Możliwe rozwiązania:</p>
+  <p>Aby <code>cue</code> osiągnęło pożądany efekt, musi być <code>sync</code>, które aktywnie oczekuje na <code>cue</code>.
+  Komunikaty <code>cue</code> znikają jeśli nie ma oczekującego na nie <code>sync</code>.
+  Możliwe rozwiązania:</p>
 <ol>
-	<li>Dodanie mikroprzerw w celu zwiększenia szansy na wykonanie <code>sync</code> przed <code>cue</code> (przykład poniżej)</li>
-	<li>Uruchomienie utworu z wyprzedzeniem (przykład na zajęciach).</li>
+  <li>Dodanie mikroprzerw w celu zwiększenia szansy na wykonanie <code>sync</code> przed <code>cue</code> (przykład poniżej)</li>
+  <li>Uruchomienie utworu z wyprzedzeniem (przykład na zajęciach).</li>
 </ol>
 
 <pre><code>in_thread do
@@ -296,34 +296,34 @@ in_thread(name: :foo) do
 end
 
 in_thread do
-	# Fragment wykonuje się razem z pętlą powyżej
-	2.times do
-		play :e4
-		play :g4
-		sleep 1
-	end
+  # Fragment wykonuje się razem z pętlą powyżej
+  2.times do
+    play :e4
+    play :g4
+    sleep 1
+  end
 
   set :wait, true
   sync :stopped
 
-	# Fragment wykonuje się jak pętla zatrzymała wykonywanie
-	2.times do
-		play :c2
-		play :e2
-		play :g2
-		sleep 1
-	end
+  # Fragment wykonuje się jak pętla zatrzymała wykonywanie
+  2.times do
+    play :c2
+    play :e2
+    play :g2
+    sleep 1
+  end
 
   set :wait, false
   cue :continue
 
-	# Fragment wykonuje się jak pętla wznowiła wykonywanie
-	3.times do
-		play :e4
-		sleep 1
-		play :g4
-		sleep 1
-	end
+  # Fragment wykonuje się jak pętla wznowiła wykonywanie
+  3.times do
+    play :e4
+    sleep 1
+    play :g4
+    sleep 1
+  end
 end</code></pre>
   </body>
 </html>
