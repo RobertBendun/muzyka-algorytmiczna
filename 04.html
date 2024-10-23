@@ -21,6 +21,12 @@
         dt {
           font-weight: bold;
         }
+				.warning {
+					border: 1px solid #ff000099;
+					background-color: #ff000030;
+					padding-inline: 1rem;
+					border-radius: 5px;
+				}
         </style>
   </head>
   <body>
@@ -55,7 +61,7 @@
 
     <h2 id="code">Zrzut kodu z zajęć</h2>
 
-		<!-- <p>Plik: <a href="artifacts/04.rb">04.rb</a></p> -->
+		 <p>Plik: <a href="artifacts/04.rb">04.rb</a></p>
 
 		<h2 id="random">Generowanie liczb pseudolosowych</h2>
 		<p>Sonic Pi posiada wbudowany generator liczb pseudolosowych, którego stan początkowy jest taki sam przy każdym uruchomieniu.</p>
@@ -122,6 +128,12 @@ Oznacza to, że pętla <code>:a</code> wydaje dźwięk w momencie 0, 2, 4, 6...;
 Pierwszym momentem w którym wydadzą wspólny dźwięk jest 30 (<code>= NWW(2, 3, 5)</code>).
 Można wykorzystać ten punkt wspólny jako przerwanie i wykonanie innego zbioru dźwięków, jak w przykładzie poniżej:
 </p>
+
+<div class="warning">
+	<p>Na zajęciach zidentyfikowano problem z poniższym kodem w Sonic Pi od wersji 4.0.0.
+	W pliku z zajęć dostępne jest rozwiązanie dla wymienionej wersji.
+	Poniższe rozwiązanie działa dla wersji starszych niż 4.0.0.</p>
+</div>
 
 <pre><code>use_bpm 240
 use_synth :tri
