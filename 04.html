@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Zajęcia 4 | Muzyka algorytmiczna</title>
+        <style>
+        html {
+            color-scheme: light dark;
+        }
+        body {
+            font-family: system-ui, sans-serif;
+            line-height: 1.6;
+            margin-inline: auto;
+            max-width: 80ch;
+        }
+        h2 {
+          border-top: 1px solid;
+          border-bottom: 1px solid;
+        }
+        dt {
+          font-weight: bold;
+        }
+        </style>
+  </head>
+  <body>
+    <header>
+      <a href="/">Muzyka algorytmiczna</a>
+    </header>
+    <h1>Zajęcia 4 (2024-10-23)</h1>
+
+    <ul>
+      <li><a href="#goal">Cel zajęć</a></li>
+      <li><a href="#todo">Zadanie</a></li>
+      <li><a href="#code">Zrzut kodu z zajęć</a></li>
+			<li><a href="#random">Generowanie liczb pseudolosowych</a></li>
+			<li><a href="#shared_state">Współdzielenie stanu pomiędzy wątkami</a></li>
+			<li><a href="#beat">Organizacja utworu wykorzystująca czas</a></li>
+			<!-- <li><a href="#minimalism">Minimalizm muzyczny</a></li> -->
+    </ul>
+
+    <h2 id="goal">Cel zajęć</h2>
+    <ol>
+			<li>Kontrola współbieżnych programów w Sonic Pi</li>
+    </ol>
+
+    <h2 id="todo">Zadanie</h2>
+
+    <p>Przygotowanie krótkiego utworu (~30s) w środowisku Sonic Pi, spełniającego następujące wymagania:</p>
+    <ol>
+			<li>Utwór o nietrywialnej formie</li>
+			<li>Wykorzystujący powtórzenia, sekcje wykonywane równolegle</li>
+			<li>Wykorzystujący co najmniej jeden sposób synchronizacji w Sonic Pi: równomierny postęp czasu, <code>cue</code>, <code>sync</code></li>
+    </ol>
+
+    <h2 id="code">Zrzut kodu z zajęć</h2>
+
+		<!-- <p>Plik: <a href="artifacts/04.rb">04.rb</a></p> -->
+
+		<h2 id="random">Generowanie liczb pseudolosowych</h2>
+		<p>Sonic Pi posiada wbudowany generator liczb pseudolosowych, którego stan początkowy jest taki sam przy każdym uruchomieniu.</p>
+
+		<ul>
+			<li><strong><code>rand n</code></strong> - losowa liczba zmiennoprzecinkowa od 0 do <code>n</code></li>
+			<li><strong><code>rand_i n</code></strong> - losowa liczba całkowita od 0 do <code>n</code> (bez <code>n</code>)</li>
+			<li><strong><code>rrand min, max</code></strong> - losowa liczba całkowita od <code>min</code> do <code>max</code></li>
+			<li><strong><code>rrand_i min, max</code></strong> - losowa liczba całkowita od <code>min</code> do <code>max</code> (bez <code>n</code>)</li>
+		</ul>
+
+		<p>Kolejne wywołania wszystkich funkcji losujących w ramach tego samego wątku korzystają z tego samego generatora liczb.
+		Poniższy przykład zwraca ten sam wynik, niezależnie od kolejności wykonania wątków:</p>
+
+<pre><code>print("x=", rand_i(100))
+
+in_thread do
+  sleep 2
+  print("y=", rand_i(100))
+end
+
+in_thread do
+  sleep 1
+  print("z=", rand_i(100))
+end</code></pre>
+
+		<h2 id="shared_state">Współdzielenie stanu pomiędzy wątkami</h2>
+
+		<p><code>set(:nazwa, wartość)</code> ustawia wartość, a <code>get[:nazwa]</code> pobiera wartość</p>
+
+
+<pre><code># Pętla kontroluje czas przez zmniejszanie czasu sleep'ów
+# halves(1, 4) = (ring 1.0, 0.5, 0.25, 0.125)
+live_loop :czas do
+  set :shared, halves(1, 4).tick
+  sleep 4
+end
+
+live_loop :wysokie do
+  synth :piano, note: :e4
+  sleep get[:shared]
+  synth :piano, note: :f4
+  sleep get[:shared]
+end
+
+live_loop :niskie do
+  with_fx :lpf, cutoff: :c4 do |f|
+    f.control cutoff: :g2, cutoff_slide: get[:shared]
+    synth :piano, note: :c2, duration: 4 * get[:shared]
+    synth :piano, note: :e2, duration: 4 * get[:shared]
+    synth :piano, note: :g2, duration: 4 * get[:shared]
+  end
+  sleep 2 * get[:shared]
+end</code></pre>
+
+<h2 id="beat">Organizacja utworu wykorzystująca czas</h2>
+<p><code>beat</code> zwraca aktualny czas w utworze.</p>
+
+<p>Zakładając, że wykonanie pojedyńczej iteracji każdej pętli zajmuje zawsze tyle samo czasu (dla danej pętli)
+oraz znając czas wykonania każdej z nich można wprowadzić wspólne przerwania wykonania.</p>
+
+<p>Wykonanie pętli <code>:a</code> zajmuje 2 uderzenia, <code>:b</code> 3, <code>:c</code> 5.
+Oznacza to, że pętla <code>:a</code> wydaje dźwięk w momencie 0, 2, 4, 6...; pętla <code>:b</code> w momencie 0, 3, 6, 9...; pętla <code>:c</code> w momencie 0, 5, 10, 15...
+Pierwszym momentem w którym wydadzą wspólny dźwięk jest 30 (<code>= NWW(2, 3, 5)</code>).
+Można wykorzystać ten punkt wspólny jako przerwanie i wykonanie innego zbioru dźwięków, jak w przykładzie poniżej:
+</p>
+
+<pre><code>use_bpm 240
+use_synth :tri
+
+live_loop :a do
+  if beat &gt; 0 and beat % 30 == 0 then sync :drop end
+  play :c4
+  sleep 2
+end
+
+live_loop :b do
+  if beat &gt; 0 and beat % 30 == 0 then sync :drop end
+  play :g4
+  sleep 3
+end
+
+live_loop :c do
+  if beat &gt; 0 and beat % 30 == 0 then sync :drop end
+  play :e4
+  sleep 5
+end
+
+sleep 30
+loop do
+  sleep(30 * (beat / 30r).ceil - beat)
+  s = synth :prophet, note: :c2, cutoff: :c9, duration: 8.1
+  control s, cutoff: :c2, cutoff_slide: 8
+  sleep 8
+  cue :drop
+end</code></pre>
+
+<p>Proces ten można zautomatyzować, co <a target="_blank" href="artifacts/interrupts.rb">pokazuje ten przykład</a>.</p>
+
+<!--
+<h2 id="minimalism">Minimalizm muzyczny</h2>
+
+<pre><code>use_bpm 60
+use_synth :prophet
+
+# Tworzymy 3 wątki wykonujące utwór
+3.times do
+  # Wywołanie rand pozwala na rozpoczynanie od innej wartości losowej w każdym z fragmentów
+  # przez pomijanie stanów generatora liczb pseudolosowych
+  in_thread do
+    # Każdy z wątków ma szansę na wykonanie od 0 do 6 iteracji danego fragmentu
+    rand_i(6).times do
+      play :f2, cutoff: :f4
+      sleep 1
+      play :e2, cutoff: :e4
+      sleep 1
+    end
+
+    rand_i(6).times do
+      with_fx :slicer, phase: 0.5 do
+        sn = synth :prophet, sustain: 4, note: :e1, cutoff: :e3, cutoff_slide: 4
+        control sn, cutoff: :e4
+        sleep 4
+      end
+    end
+
+    blade = synth :blade, note: :e3, note_slide: 0.5, duration: 10000
+    rand_i(6).times do
+      blade.control note: (ring :f3, :e3).tick
+      sleep 1
+    end
+    blade.control note: :c9, cutoff: 0, cutoff_slide: 2
+
+    rand_i(6).times do
+      with_fx :slicer, phase: 0.25 do
+        sn = synth :prophet, sustain: 4, note: :e1, cutoff: :e2, cutoff_slide: 4
+        control sn, cutoff: :e3
+        sleep 4
+      end
+    end
+
+    rand_i(6).times do
+      play :e5
+      sleep 1
+      play :f5
+      sleep 1
+    end
+  end
+end</code></pre>
+-->
+  </body>
+</html>
+
