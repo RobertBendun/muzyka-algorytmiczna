@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Zajęcia 4 | Muzyka algorytmiczna</title>
+        <style>
+        html {
+            color-scheme: light dark;
+        }
+        body {
+            font-family: system-ui, sans-serif;
+            line-height: 1.6;
+            margin-inline: auto;
+            max-width: 80ch;
+        }
+        h2 {
+          border-top: 1px solid;
+          border-bottom: 1px solid;
+        }
+        dt {
+          font-weight: bold;
+        }
+				.warning {
+					border: 1px solid #ff000099;
+					background-color: #ff000030;
+					padding-inline: 1rem;
+					border-radius: 5px;
+				}
+        </style>
+  </head>
+  <body>
+    <header>
+      <a href="/">Muzyka algorytmiczna</a>
+    </header>
+    <h1>Zajęcia 5 (2024-10-30)</h1>
+
+    <ul>
+      <li><a href="#goal">Cel zajęć</a></li>
+      <li><a href="#todo">Zadanie</a></li>
+      <li><a href="#code">Zrzut kodu z zajęć</a></li>
+			<li><a href="#chords">Akordy</a></li>
+			<li><a href="#osc">Open Sound Control</a></li>
+    </ul>
+
+    <h2 id="goal">Cel zajęć</h2>
+    <ol>
+			<li>Komunikacja sieciowa w Sonic Pi</li>
+			<li>Przykłady algorytmicznej kompozycji</li>
+    </ol>
+
+    <h2 id="todo">Zadanie</h2>
+
+		<h3>Na kolejne zajęcia</h3>
+
+    <p>Przygotowanie krótkiego utworu (~30s) w środowisku Sonic Pi, spełniającego następujące wymagania:</p>
+
+		<em>Wymagania nie zostały jeszcze ustalone</em>
+
+		<h3>Na zajęciach</h3>
+		<p>Przygotowanie programu w Sonic Pi, który:</p>
+		<ol>
+			<li>Otrzymuje 4 dźwięki (w postaci liczb MIDI) przez komunikaty OSC na ścieżce <code>/next</code> od dowolnego nadawcy</li>
+			<li>Odtwarza je</li>
+			<li>Przekształca co najmniej jeden z dźwięków</li>
+			<li>Wysyła do kolejnej osoby przez komunikat <code>/next</code></li>
+		</ol>
+
+		<p>Przyklady przekształceń: zmiana o oktawę, dodanie losowego przesunięcia, reinterpretacja w innej skali, zmiana kolejności dźwięków.
+		Zachęcam do kreatywności!</p>
+
+
+    <h2 id="code">Zrzut kodu z zajęć</h2>
+
+		<!--<p>Plik: <a href="artifacts/04.rb">04.rb</a></p> -->
+
+		<h2 id="chords">Akordy</h2>
+
+		<p>Akordy można tworzyć poprzez funkcję <code>chord</code>, przyjmującą bazowy dźwięk oraz rodzaj akordu.</p>
+
+<pre><code># To:
+play :c4
+play :g4
+play :e4
+sleep 1
+
+# Jest równoważne temu:
+play [:c4, :g4, :e4], amp: 3
+sleep 1
+
+# i temu:
+play chord(:c4, :maj), amp: 3
+sleep 1
+
+# A to:
+play [:c4, :g4, :e4]
+sleep 1
+
+# Temu:
+play :c4, amp: 1/3r
+play :g4, amp: 1/3r
+play :e4, amp: 1/3r
+sleep 1
+
+# I temu:
+play chord(:c4, :maj)</pre></code>
+
+
+		<h2 id="osc">Open Sound Control</h2>
+		<h3>Podstawowa komunikacja</h3>
+
+		<p>Komunikaty OSC odbierane są poprzez funkcję <code>sync</code>; wysyłane poprzez funkcje <code>osc</code>, <code>osc_send</code>.
+
+		<ul>
+			<li>Wyślij do 150.254.65.170 na ścieżkę <code>/path</code>: <code>osc_send "150.254.65.170", 4560, "/path"</code></li>
+			<li>Odbierz od dowolnego nadawcy ścieżkę <code>/path</code>: <code>sync "/osc*/path"</code></li>
+			<li>Odbierz od nadawcy 150.254.65.170: <code>sync "/osc:150.254.65.170:*/path"</code></li>
+			<li>Odbierz od nadawcy 150.254.65.170, port 8888: <code>sync "/osc:150.254.65.170:8888/path"</code></li>
+			<li>Wyślij dźwięk :c4 do 150.254.65.170: <code>osc_send "150.254.65.170", 4560, "/path", :c4</code></li>
+		</ul>
+
+		<h4>Przykład lokalnej komunikacji OSC</h4>
+<pre><code>live_loop :consumer do
+  a, b = sync "/osc:127.0.0.1:*/go"
+  play a
+  sleep 1
+  play b
+end
+
+live_loop :producer do
+  osc_send "127.0.0.1", 4560, "/go", :e4, :f4
+  sleep 2
+end</code></pre>
+
+
+		<h4>Odbierz, zmień i wyślij dalej</h4>
+
+		<p>Z użyciem pierścieni:</p>
+
+<pre><code>live_loop :transform do
+  sounds = (sync "/next/*").ring
+  play_pattern_timed sounds, 1
+  osc_send "&lt;adres IP kolejnej osoby&gt;", 4560, "/next", *sounds.reverse
+end</pre></code>
+
+		<p>Manualnie:</p>
+
+<pre><code>live_loop :transform do
+  a, b, c, d = sync "/next/*"
+  play_pattern_timed ring(a, b, c, d), 1
+  osc_send "&lt;adres IP kolejnej osoby&gt;", 4560, "/next", d, c, b, a
+end</pre></code>
+
+  </body>
+</html>
+
