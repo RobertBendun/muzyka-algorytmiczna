@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Zajęcia 4 | Muzyka algorytmiczna</title>
+    <title>Zajęcia 5 | Muzyka algorytmiczna</title>
         <style>
         html {
             color-scheme: light dark;
@@ -41,6 +41,7 @@
       <li><a href="#code">Zrzut kodu z zajęć</a></li>
 			<li><a href="#chords">Akordy</a></li>
 			<li><a href="#osc">Open Sound Control</a></li>
+			<li><a href="#microtones">Microtones</a></li>
     </ul>
 
     <h2 id="goal">Cel zajęć</h2>
@@ -51,9 +52,9 @@
 
     <h2 id="todo">Zadanie</h2>
 
-		<h3>Na kolejne zajęcia</h3>
+		<h3>Na kolejne zajęcia (2024-11-06)</h3>
 
-    <p>Przygotowanie krótkiego utworu (~30s) w środowisku Sonic Pi, spełniającego następujące wymagania:</p>
+    <p>Przygotowanie krótkiego utworu (~1min) w środowisku Sonic Pi, spełniającego następujące wymagania:</p>
 
 		<ul>
 			<li>Harmonia</li>
@@ -61,7 +62,7 @@
 			<li>Eksperymenty z mikrotonami</li>
 		</ul>
 
-		<em>Wymagania nie zostały jeszcze ustalone</em>
+		<p>Przydatne informacje: <a target="_blank" href="#microtones">mikrotony</a>, <a target="_blank" href="/03.html#tet">generowanie skal równomiernie temperowanych</a>.</p>
 
 		<h3>Na zajęciach</h3>
 		<p>Przygotowanie programu w Sonic Pi, który:</p>
@@ -77,6 +78,8 @@
 
 
     <h2 id="code">Zrzut kodu z zajęć</h2>
+
+		<em>Wykorzystano wyłącznie poniższe przykłady.</em>
 
 		<!--<p>Plik: <a href="artifacts/04.rb">04.rb</a></p> -->
 
@@ -113,6 +116,14 @@ play chord(:c4, :maj)</pre></code>
 
 
 		<h2 id="osc">Open Sound Control</h2>
+
+<div class="warning">
+	<p>W trakcie zajęć 2024-10-30 znaleziono kilka problematycznych zachowań Sonic Pi w ramach komunikacji OSC.
+	Komunikaty nie były zawsze przesyłane pomiędzy komputerami, na niektórych udawało się wyłącznie nadawać, na innych wyłącznie odbierać.
+	Wykorzystywanie OSC uznawane jest przez to jako eksperymentalne.</p>
+</div>
+
+
 		<h3>Podstawowa komunikacja</h3>
 
 		<p>Komunikaty OSC odbierane są poprzez funkcję <code>sync</code>; wysyłane poprzez funkcje <code>osc</code>, <code>osc_send</code>.
@@ -144,19 +155,55 @@ end</code></pre>
 		<p>Z użyciem pierścieni:</p>
 
 <pre><code>live_loop :transform do
-  sounds = (sync "/next/*").ring
+  sounds = (sync "/osc*/next").ring
   play_pattern_timed sounds, 1
-  osc_send "&lt;adres IP kolejnej osoby&gt;", 4560, "/next", *sounds.reverse
+  osc_send "adres IP kolejnej osoby", 4560, "/next", *sounds.reverse
 end</pre></code>
 
 		<p>Manualnie:</p>
 
 <pre><code>live_loop :transform do
-  a, b, c, d = sync "/next/*"
+  a, b, c, d = sync "/osc*/next"
   play_pattern_timed ring(a, b, c, d), 1
-  osc_send "&lt;adres IP kolejnej osoby&gt;", 4560, "/next", d, c, b, a
+  osc_send "adres IP kolejnej osoby", 4560, "/next", d, c, b, a
 end</pre></code>
 
+		<h2 id="microtones">Mikrotony</h2>
+
+		<p>Mikrotony - interwały mniejsze od półtonu. W Sonic Pi półton to wartość 1, więc mikrotony to wartości ułamkowe jak 0.5.
+		Poniższe przykłady odtwarzają te same dźwięki, zapisane w różnych formatach:</p>
+
+<pre><code># stosując zapis z przecinkiem
+play 60
+sleep 1
+play 60.25 # przesunięcie o 0.25 półtonu (= 25 centów)
+sleep 1
+play 60.5  # przesunięcie o 0.5 półtonu (= 50 centów)
+sleep 1
+
+# stosując zapis ułamkowy
+play 60
+sleep 1
+play 60 + 1/4r
+sleep 1
+play 60 + 1/2r
+sleep 1
+
+# zapisując w centach
+play 60
+sleep 1
+play 60 + 25/100r
+sleep 1
+play 60 + 50/100r
+sleep 1
+
+# zapisując w Hz
+play hz_to_midi(261.6255653005986)
+sleep 1
+play hz_to_midi(265.4309967761148)
+sleep 1
+play hz_to_midi(269.2917795270241)
+sleep 1</code></pre>
   </body>
 </html>
 
