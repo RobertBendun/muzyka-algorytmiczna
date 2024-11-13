@@ -42,7 +42,6 @@
 			<li><a href="#random">Generowanie liczb pseudolosowych</a></li>
 			<li><a href="#shared_state">Współdzielenie stanu pomiędzy wątkami</a></li>
 			<li><a href="#beat">Organizacja utworu wykorzystująca czas</a></li>
-			<!-- <li><a href="#minimalism">Minimalizm muzyczny</a></li> -->
     </ul>
 
     <h2 id="goal">Cel zajęć</h2>
@@ -168,55 +167,6 @@ end</code></pre>
 <p>Proces ten można zautomatyzować, co <a target="_blank" href="artifacts/interrupts.rb">pokazuje ten przykład</a>.</p>
 
 <!--
-<h2 id="minimalism">Minimalizm muzyczny</h2>
-
-<pre><code>use_bpm 60
-use_synth :prophet
-
-# Tworzymy 3 wątki wykonujące utwór
-3.times do
-  # Wywołanie rand pozwala na rozpoczynanie od innej wartości losowej w każdym z fragmentów
-  # przez pomijanie stanów generatora liczb pseudolosowych
-  in_thread do
-    # Każdy z wątków ma szansę na wykonanie od 0 do 6 iteracji danego fragmentu
-    rand_i(6).times do
-      play :f2, cutoff: :f4
-      sleep 1
-      play :e2, cutoff: :e4
-      sleep 1
-    end
-
-    rand_i(6).times do
-      with_fx :slicer, phase: 0.5 do
-        sn = synth :prophet, sustain: 4, note: :e1, cutoff: :e3, cutoff_slide: 4
-        control sn, cutoff: :e4
-        sleep 4
-      end
-    end
-
-    blade = synth :blade, note: :e3, note_slide: 0.5, duration: 10000
-    rand_i(6).times do
-      blade.control note: (ring :f3, :e3).tick
-      sleep 1
-    end
-    blade.control note: :c9, cutoff: 0, cutoff_slide: 2
-
-    rand_i(6).times do
-      with_fx :slicer, phase: 0.25 do
-        sn = synth :prophet, sustain: 4, note: :e1, cutoff: :e2, cutoff_slide: 4
-        control sn, cutoff: :e3
-        sleep 4
-      end
-    end
-
-    rand_i(6).times do
-      play :e5
-      sleep 1
-      play :f5
-      sleep 1
-    end
-  end
-end</code></pre>
 -->
   </body>
 </html>

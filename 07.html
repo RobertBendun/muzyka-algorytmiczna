@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Zajęcia 7 | Muzyka algorytmiczna</title>
+        <style>
+        html {
+            color-scheme: light dark;
+        }
+        body {
+            font-family: system-ui, sans-serif;
+            line-height: 1.6;
+            margin-inline: auto;
+            max-width: 80ch;
+        }
+        h2 {
+          border-top: 1px solid;
+          border-bottom: 1px solid;
+        }
+        dt {
+          font-weight: bold;
+        }
+				.warning {
+					border: 1px solid #ff000099;
+					background-color: #ff000030;
+					padding-inline: 1rem;
+					border-radius: 5px;
+				}
+        </style>
+  </head>
+  <body>
+    <header>
+      <a href="/">Muzyka algorytmiczna</a>
+    </header>
+    <h1>Zajęcia 7 (2024-11-13)</h1>
+
+    <ul>
+      <li><a href="#goal">Cel zajęć</a></li>
+      <li><a href="#todo">Zadanie</a></li>
+      <li><a href="#code">Zrzut kodu z zajęć</a></li>
+			<li><a href="#sample">Gotowy materiał audio</a></li>
+			<li><a href="#parallel">Równolegli „wykonawcy”</a></li>
+    </ul>
+
+    <h2 id="goal">Cel zajęć</h2>
+    <ol>
+			<li>Kontrola współbieżnych programów w Sonic Pi</li>
+    </ol>
+
+    <h2 id="todo">Zadanie (na 2024-11-20)</h2>
+
+    <p>Przygotowanie krótkiego utworu (~30s) w środowisku Sonic Pi, spełniającego następujące wymagania:</p>
+    <ol>
+    </ol>
+
+    <h2 id="code">Zrzut kodu z zajęć</h2>
+
+		<!-- <p>Plik: <a href="artifacts/04.rb">04.rb</a></p> -->
+
+<h2 id="sample">Gotowy materiał audio</h2>
+
+<p><a href="/sonic.html#sample">Dokumentacja funkcji sample</a></p>
+
+<p>Wstępne ładowanie długich plików audio: <a href="/sonic.html#load_sample">load_sample</a></p>
+
+<h3>Dostosowanie długości odtworzenia sample'a</h3>
+
+<h4>Przez skurczenie / rozciągnięcie do zadanej długości</h4>
+
+<pre><code>use_synth :blade
+live_loop :test do
+  sample :loop_amen, beat_stretch: 4
+  play_pattern_timed(ring(:f4, :f5, :e4, :e5), 1)
+end</code></pre>
+
+<h4>Przez zmianę prędkości odtwarzania</h4>
+<pre><code>sample :loop_breakbeat, rate: 1
+sleep sample_duration(:loop_breakbeat, rate: 1)
+
+sample :loop_breakbeat, rate: 0.5
+sleep sample_duration(:loop_breakbeat, rate: 0.5)
+
+sample :loop_breakbeat, rate: 2
+sleep sample_duration(:loop_breakbeat, rate: 2)</code></pre>
+
+<h4>Przez wybór fragmentu</h4>
+<pre><code>sample :arovane_beat_a, start: 0, finish: 0.1
+sleep sample_duration(:arovane_beat_a, start: 0, finish: 0.1)
+
+sleep 1
+
+sample :arovane_beat_a, start: 0.9, finish: 1
+sleep sample_duration(:arovane_beat_a, start: 0.8, finish: 1)</code></pre>
+
+<h3>Wykorzystywanie plików audio</h3>
+
+<p><a href="artifacts/tomatoes.wav">tomatoes.wav</a></p>
+
+<p>Poniższy przykład zakłada, że plik znajduje się w tej samej ścieżce co Sonic Pi.
+Rekomendowanym jest używanie pełnych ścieżek (absolute path).</p>
+
+<p>Windows: <code>\</code> należy zamienić na <code>\\</code>: ścieżka <code>"C:\Users\test\test.wav"</code> na <code>"C:\\Users\\test\\test.wav"</code></p>
+
+<pre><code>use_bpm 60
+
+tomatoes = "tomatoes.wav"
+
+sample tomatoes, pitch: 12
+sleep sample_duration(tomatoes)
+
+12.times do |n|
+  rate = 1 + 0.25 * n
+
+  s = 0.4
+  f = 0.67
+  sample tomatoes, start: s, finish: f, rate: rate, lpf: :c7
+  sleep sample_duration(tomatoes, rate: rate, start: s, finish: f)
+end
+
+sample tomatoes, rate: 0.8, attack: 0, decay: 0, sustain: 0, release: sample_duration(tomatoes)</code></pre>
+
+<h3>Efekty</h3>
+
+<pre><code># W przypadku fxów pomaga wcześniej załadować:
+load_sample "tomatoes.wav"
+
+with_fx :panslicer, smooth: 0.25 do
+  with_fx :reverb do
+    with_fx :flanger do
+      with_fx :ring_mod do
+        sample "tomatoes.wav"
+      end
+    end
+  end
+end</code></pre>
+
+<h2 id="parallel">Równolegli „wykonawcy”</h2>
+
+<pre><code>use_bpm 60
+use_synth :prophet
+
+# Tworzymy 3 wątki wykonujące utwór
+3.times do
+  # Wywołanie rand pozwala na rozpoczynanie od innej wartości losowej w każdym z fragmentów
+  # przez pomijanie stanów generatora liczb pseudolosowych
+  in_thread do
+    # Każdy z wątków ma szansę na wykonanie od 0 do 6 iteracji danego fragmentu
+    rand_i(6).times do
+      play :f2, cutoff: :f4
+      sleep 1
+      play :e2, cutoff: :e4
+      sleep 1
+    end
+
+    rand_i(6).times do
+      with_fx :slicer, phase: 0.5 do
+        sn = synth :prophet, sustain: 4, note: :e1, cutoff: :e3, cutoff_slide: 4
+        control sn, cutoff: :e4
+        sleep 4
+      end
+    end
+
+    blade = synth :blade, note: :e3, note_slide: 0.5, duration: 10000
+    rand_i(6).times do
+      blade.control note: (ring :f3, :e3).tick
+      sleep 1
+    end
+    blade.control note: :c9, cutoff: 0, cutoff_slide: 2
+
+    rand_i(6).times do
+      with_fx :slicer, phase: 0.25 do
+        sn = synth :prophet, sustain: 4, note: :e1, cutoff: :e2, cutoff_slide: 4
+        control sn, cutoff: :e3
+        sleep 4
+      end
+    end
+
+    rand_i(6).times do
+      play :e5
+      sleep 1
+      play :f5
+      sleep 1
+    end
+  end
+end</code></pre>
+
+  </body>
+</html>
+
