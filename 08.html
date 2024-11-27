@@ -107,7 +107,7 @@ end</pre></code>
 		<h3>Linux</h3>
 
 		<p>Najprostsza metoda - zwiększenie liczby portów tworzonych automatycznie przez ALSA:</p>
-<pre><code># echo "options snd-seq-dummy ports=4" &lt; /etc/modprobe.d/more-midi-ports.conf
+<pre><code># echo "options snd-seq-dummy ports=4" &gt; /etc/modprobe.d/more-midi-ports.conf
 # reboot</code></pre>
 
 		<h3>Windows</h3>
