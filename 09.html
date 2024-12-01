@@ -169,6 +169,37 @@ end</code></pre>
     <p>Operacje P, I, R, RI wraz z złożeniem funkcji jako działaniem tworzą grupę abelową
     znaną jako <a target="_blank" href="https://pl.wikipedia.org/wiki/Grupa_czw%C3%B3rkowa_Kleina">Grupa Czwórkowa Kleina</a>,
     gdzie P jest elementem neutralnym.</p>
+
+		<h4>Implementacja</h4>
+
+<p>Inwersja w której możemy wyjść poza oryginalną serię:</p>
+
+<pre><code>define :inwersja do |seq|
+  xs = [seq[0]]
+  for i in 1...12 do
+    xs[i] = xs[i-1] + (seq[i-1] - seq[i])
+  end
+  xs.ring
+end</code></pre>
+
+<p>Inwersja w której pozostajemy w serii:</p>
+
+<pre><code>define :inwersja_mod do |seq|
+  inw = inwersja(seq)
+  inw.flat_map do |x|
+    (x - inw.min) % 12 + inw.min
+  end
+end</code></pre>
+
+<p>Rak i rak inwersji:</p>
+
+<pre><code>define :rak do |seq|
+  seq.reverse
+end
+
+define :rak_inwersji do |seq|
+  rak(inwersja(seq))
+end</code></pre>
   </body>
 </html>
 
