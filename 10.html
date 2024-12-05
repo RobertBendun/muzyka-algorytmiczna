@@ -56,13 +56,30 @@
 
     <h2 id="todo">Zadanie</h2>
 
-    <h3>Na kolejne zajęcia (2024-12-04)</h3>
+    <h3>Na kolejne zajęcia (2024-12-18)</h3>
 
-    <p>Przygotowanie krótkiego utworu (~1min) w środowisku Sonic Pi, spełniającego następujące wymagania:</p>
+    <p>Przygotowanie krótkiego utworu (~30s), spełniającego następujące wymagania:</p>
+
+		<ul>
+			<li>Wykorzystuje komunikację MIDI pomiędzy dowolnym producentem komunikatów (np. Sonic Pi, Reaper, aplaymidi, Euterpea),
+				a odbiorcą komunikatów (np. Reaper, Decent Sampler, FluidSynth)</li>
+			<li>Wykorzystuje instrument MIDI oparty o sample (np. Decent Sampler, FluidSynth, Sonic Pi jako instrument przyjmujący komunikaty MIDI i uruchamiający sample)</li>
+			<li>Sample powinny pochodzić z co najmniej 2 instrumentów</li>
+		</ul>
+
+		<p>Zadanie z 2 tygodniowym terminem oddania z uwagi na dodatkowe materiały na zajęciach 2024-12-11.</p>
+
+		<p>Przykładowe formy utworu spełniające wymagania:</p>
+
+		<ul>
+			<li>Klawiatura MIDI wysyłające komunikaty MIDI do Sonic Pi, który odtwarza na ich podstawie wybrane sample</li>
+			<li>Sonic Pi wysyłający komunikaty MIDI do Decent Sampler (lub np. Fluid Synth)</li>
+			<li>Repear (lub inny program DAW) wysyłający komunikaty MIDI do Decent Sampler (lub np. Fluid Synth)</li>
+		</ul>
 
     <h2>Kod z zajęć</h2>
 
-    <!-- <p>Plik: <a href="artifacts/08.rb">08.rb</a></p> -->
+    <p>Plik: <a href="artifacts/10.rb">10.rb</a></p>
 
 		<h2>Linki</h2>
 
@@ -74,11 +91,14 @@
 
 <pre><code id="code"></code></pre>
 
+		<h2>Gramatyki bezkontekstowe</h2>
+
+		<p>Materiały pojawią się do przyszłych zajęc.</p>
+
 <script>
 // much security
 code.textContent = atob("em5pa25pZSBkbyAyMDI0LTEyLTA4OgptYWlsOiBuaWdvZjMxNDM0QGpvbmVzcGFsLmNvbQpwYXNzOiBZLiZDKmNYUHEjZTdTJic=");
 </script>
-
   </body>
 </html>
 
