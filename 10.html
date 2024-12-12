@@ -93,12 +93,207 @@
 
 		<h2>Gramatyki bezkontekstowe</h2>
 
-		<p>Materiały pojawią się do przyszłych zajęc.</p>
+		<p>Nieformalna definicja:</p>
 
-<script>
-// much security
-code.textContent = atob("em5pa25pZSBkbyAyMDI0LTEyLTA4OgptYWlsOiBuaWdvZjMxNDM0QGpvbmVzcGFsLmNvbQpwYXNzOiBZLiZDKmNYUHEjZTdTJic=");
-</script>
+		<p>Gramatyka formalna - sposób na opis języka, czyt. sposobu na tworzenie (lub walidację) ciągów znaków w danym języku.
+		Gramatyka bezkontekstowa to gramatyka, w której z pojedynczych symboli możemy tworzyć zdania (= nie potrzeba kontekstu, wystarczy jeden symbol by zastosować jedną z reguł).</p>
+
+		<p>Gramatyki najczęściej definiowane są przez reguły. Reguła <code>A → B</code> oznacza, że posiadając symbol <code>A</code> można zamienić go na symbol <code>B</code>.</p>
+
+		<h3>Przykłady gramatyk</h3>
+
+		<p>Prosta gramatyka, która zmienia przykładowy ciąg „AA” w ciąg „BBBB”:</p>
+		<pre><code>A → BB</code></pre>
+
+		<p>Gramatyka, generująca ciągi „ab”, „aabb”, „aaabbb”:
+<pre><code>S → aSb
+S →</code></pre>
+
+<p>brak treści w drugiej regule dla symbolu S jest celowy - pozwala na zakończenie generowania ciągu znaków przez możliwość „usunięcia” symbolu S.
+W innym przypadku bez wprowadzenia dodatkowych ograniczeń generowane byłby nieskończenie długie ciągi.</p>
+
+<p>Przykład gramatyki, która generuje nieskończenie długie ciągi:</p>
+
+<pre><code>A → ABA
+B → CC
+C → BAB</code></pre>
+
+		<h3>Zastosowanie graficzne</h3>
+
+		<p><a href="https://en.wikipedia.org/wiki/L-system">L - systemy</a>, umożliwiające procedularne generowanie np. drzew.</p>
+
+		<h3>Zastosowanie muzyczne</h3>
+
+		<p>Symbolom wygenerowanym przez gramatykę można przyporządkować znaczenie muzyczne.
+		Ponieważ prostsze jest tworzenie gramatyk nieskończonych, wprowadzone zostaje dodatkowe ograniczenie: liczba rund w których możemy dopasować reguły.</p>
+
+		<h4>Przykład: Symbole odpowiadają dźwiękom</h4>
+
+		<p>Wykorzystana gramatyka:</p>
+
+<pre><code>S → KCE
+K → KSSE</code></pre>
+
+<p>Pierwsze kilka rund zastosowania zasad, zaczynając od symbolu „S”:</p>
+
+<ol>
+	<li>KCE</li>
+	<li>KSSE</li>
+	<li>KSSEKCEKCE</li>
+</ol>
+
+<p>Funkcja automatycznie generująca kolejne rundy wygląda następująco:</p>
+
+<pre><code>define :kolejny do |str|
+  kolejny = ""
+  for x in str.chars
+    if x == "S" then kolejny += "KCK" end
+    if x == "K" then kolejny += "ESSE" end
+  end
+  kolejny
+end
+</pre></code>
+
+<p>Wywoływana następująco:</p>
+
+<pre><code>kolejny("S") # zwraca „KCK”</code></pre>
+
+<p>Interpretując „C” jako <code>:c4</code>, „E” jako <code>:e4</code>, a pozostałe symbole jako zwiększanie „S” i zmniejszanie „K” tempa możemy <strong>interpretować</strong> stworzony przez gramatykę utwór następująco:</p>
+
+<pre><code>program = "S"
+3.times do program = kolejny(program) end
+p = 1.0
+for x in program.chars
+	if x == "C" then play :c4, duration: p end
+	if x == "E" then play :e4, duration: p end
+	if x == "S" then p /= 2 end
+	if x == "K" then p *= 2 end
+	sleep p
+end</code></pre>
+
+	<h4>Gramatyka kontroluje pełny proces odtwarzania utworu</h4>
+
+	<p>Symbole mają pełną kontrolę nad utworem - zmieniają wykorzystywany syntezator, własności wykonywanych dźwięków, tworzą nowe wątki w których wykonywane są programy.</p>
+
+<p>W poniższym przykładzie:</p>
+
+<ul>
+	<li><code>C</code>, <code>E</code>, <code>G</code> odpowiadają dźwiękom c, e, g w wybranej oktawie</li>
+	<li><code>U</code> zwiększa oktawę, z ograniczeniem do co najwyżej 6 oktawy</li>
+	<li><code>D</code> zmniejsza oktawę z ograniczeniem do co najmniej 2 oktawy</li>
+	<li><code>Y</code> tworzy wątek, który wykonuje program od kolejnego symbolu ale 4 razy wolniej.
+		Aktualny wątek zaczyna wykonywać się 2 razy wolniej.</li>
+</ul>
+
+<pre><code>define :kolejny do |str|
+  kolejny = ""
+  for x in str.chars
+    if x == "C" then kolejny += "CGE" end
+    if x == "E" then kolejny += "EEG" end
+    if x == "G" then kolejny += "CUY" end
+    if x == "U" then kolejny += "UCGEDD" end
+    if x == "D" then kolejny += "DEGCU" end
+    if x == "Y" then
+      # nie robimy nic
+    end
+  end
+  kolejny
+end
+
+use_bpm 240
+
+define :interpretuj do |program, start, start_p, start_oct|
+  p = start_p
+  o = start_oct
+  program.chars[start..].each_with_index do |x, i|
+    if x == "C" then synth :dsaw, note: note(:c, octave: o), duration: p, amp: 0.5 end
+    if x == "E" then synth :dsaw, note: note(:e, octave: o), duration: p, amp: 0.5 end
+    if x == "G" then synth :dsaw, note: note(:g, octave: o), duration: p, amp: 0.5 end
+
+    if x == "U" and o &lt;= 6 then o += 1 end
+    if x == "D" and o &gt;= 2 then o -= 1 end
+
+    if x == "Y" then
+      old_p = p
+      p = p * 2
+      in_thread do
+        interpretuj(program, start+i+1, old_p * 4, o)
+      end
+    end
+    sleep p
+  end
+end
+
+program = "C"
+3.times do program = kolejny(program) end
+
+interpretuj(program, 0, 0.5, 4)</code></pre>
+
+<h4>Gramatyka kontroluje strukturę utworu</h4>
+
+<p>Poniższy przykład jest zmienionym utworem z zajęć o minimaliźmie - tym razem zamiast procesu losowego, kontrolowany jest on przez program.</p>
+
+<pre><code>use_bpm 60
+use_synth :prophet
+
+program = "AAWAWBCBDE"
+
+define :interpretuj do |program, start|
+  program.chars[start..].each_with_index do |x, i|
+    if x == "A"
+      play :f2, cutoff: :f4
+      sleep 1
+      play :e2, cutoff: :e4
+      sleep 1
+    end
+
+    if x == "B"
+      with_fx :slicer, phase: 0.5 do
+        sn = synth :prophet, sustain: 4, note: :e1, cutoff: :e3, cutoff_slide: 4
+        control sn, cutoff: :e4
+        sleep 4
+      end
+    end
+
+    if x == "C"
+      blade = synth :blade, note: :e3, note_slide: 0.5, duration: 10000
+      rand_i(6).times do
+        blade.control note: (ring :f3, :e3).tick
+        sleep 1
+      end
+      blade.control note: :c9, cutoff: 0, cutoff_slide: 2
+    end
+
+    if x == "D"
+      rand_i(6).times do
+        with_fx :slicer, phase: 0.25 do
+          sn = synth :prophet, sustain: 4, note: :e1, cutoff: :e2, cutoff_slide: 4
+          control sn, cutoff: :e3
+          sleep 4
+        end
+      end
+    end
+
+    if x == "E"
+      rand_i(6).times do
+        play :e5
+        sleep 1
+        play :f5
+        sleep 1
+      end
+    end
+
+    if x == "W"
+      in_thread do
+        sleep 2
+        interpretuj(program, start+i+1)
+      end
+    end
+  end
+end
+
+interpretuj(program, 0)</code></pre>
+
   </body>
 </html>
 

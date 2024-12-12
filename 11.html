@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="robots" content="noindex,nofollow,nosnippet,noodp,noarchive,noimageindex">
+    <title>Zajęcia 11 | Muzyka algorytmiczna</title>
+        <style>
+        html {
+            color-scheme: light dark;
+        }
+        body {
+            font-family: system-ui, sans-serif;
+            line-height: 1.6;
+            margin-inline: auto;
+            max-width: 80ch;
+        }
+        h2 {
+          border-top: 1px solid;
+          border-bottom: 1px solid;
+        }
+        dt {
+          font-weight: bold;
+        }
+        .warning {
+          border: 1px solid #ff000099;
+          background-color: #ff000030;
+          padding-inline: 1rem;
+          border-radius: 5px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+          img {
+            filter: invert(1);
+          }
+        }
+        </style>
+  </head>
+  <body>
+    <header>
+      <a href="/">Muzyka algorytmiczna</a>
+    </header>
+    <h1>Zajęcia 11 (2024-12-11)</h1>
+
+    <ul>
+      <li><a href="#goal">Cel zajęć</a></li>
+      <li><a href="#todo">Zadanie</a></li>
+			<li><a href="#concert">Koncert zaliczeniowy</a></li>
+			<li><a href="#midiin">Wejście MIDI Sonic Pi</a></li>
+			<li><a href="#algo">Przykłady muzyki algorytmicznej</a></li>
+    </ul>
+
+    <h2 id="goal">Cel zajęć</h2>
+    <ol>
+			<li>Zaprezentowanie przykładów kompozycji zaliczeniowych</li>
+			<li>Przedstawienie dodatkowych inspiracji algorytmicznych</li>
+    </ol>
+
+    <h2 id="todo">Zadanie</h2>
+
+    <h3>Na kolejne zajęcia (2024-12-18)</h3>
+
+		<p>Przygotowanie koncepcji utworu zaliczeniowego (np. fragment planowanego utworu, ogólny pomysł w liście kroków, pomysł).
+		Zaprezentowana koncepcja nie jest zobowiązaniem - można ją zmienić.</p>
+
+		<p>Na kolejnych zajęciah (2024-12-18) będzie można zaprezentować koncepcję (dowolnie skomplikowaną) oraz wykorzystać wiedzę muzyczno-programistyczną osób prowadzących do ewaluacji pomysłu, porad, szukania rozwiązań itp.</p>
+
+		<h2>Koncert zaliczeniowy</h2>
+
+		<p>Prawdopodobny termin: 2025-01-31 (do potwierdzenia).</p>
+
+		<p>Wymagania kompozycji zaliczeniowej:</p>
+
+		<ul>
+			<li>Utwór w dowolnej formie (rekomendowane wykorzystanie technik prezentowanych na zajęciach)</li>
+			<li>Od 2-3 minut długości (można dłuższe, ale należy mieć wtedy dobre uzasadnienie)</li>
+			<li>Utwór posiada tytuł oraz 1-3 zdania opisu</li>
+		</ul>
+
+		<p>Utwór można:</p>
+		<ul>
+			<li>tworzyć w grupach (utwór powinien odzwierciedlać ilość osób w grupie)</li>
+			<li>tworzyć w grupach z osobami spoza zajęć</li>
+			<li>tworzyć z wykorzystaniem zewnętrznych urządzeń (np. zewnętrzny syntezator, wizualizacje na projektorze, światła, etc)</li>
+		</ul>
+
+
+		<h2 id="midiin">Wejście MIDI Sonic Pi</h2>
+
+		<p>Podobny mechanizm do OSC, można odebrać komunikaty typu <code>note_on</code>, <code>note_off</code>, <code>control_change</code>, ...</p>
+
+		<p>Specyfikacja: <code>/midi:nazwa_portu:nr_kanału/typ_komunikatu</code></p>
+
+		<pre><code>live_loop :receive_midi do
+  use_real_time
+  note, velocity = sync "/midi:*:*/note_on"
+  synth :blade, note: note, amp: velocity / 127.0
+end</code></pre>
+
+		<h2 id="algo">Przykłady muzyki algorytmicznej</h2>
+
+		<p><a href="https://www.youtube.com/watch?v=zMJAevVri5w">Akordeon Laptopowy</a>.
+		W opisie link do artykułu wprowadzającego urządzenie, polecam przeczytać!</p>
+
+		<h3>Dźwięki sortowania</h3>
+
+		<p>Przykład w którym wykorzystywany jest Sonic Pi do realizacji argumentów sortujących,
+		w celu prezentacji algorytmu w formie muzycznej.
+		W celu wizualizacji graficznej wykorzystuje dodatkowy program stworzony w języku Python.
+		Inspirowane „<a href="https://panthema.net/2013/sound-of-sorting/">The Sound of Sorting - "Audibilization" and Visualization of Sorting Algorithms</a>”,
+		zapraszam do zapoznania się z artykułem jak i kodem programu, który jest dostępny do pobrania.</p>
+
+		<h4>Uruchomienie</h4>
+
+		<p>Wymagania wstępne: interpreter języka Python 3, pip</p>
+
+		<ol>
+			<li>Pobranie kodu źródłowego programu wizualizacyjnego: <a href="artifacts/osc/osc.py">osc.py</a></li>
+			<li>Instalacja zależności: <code>pip3 install pygame python-osc</code></li>
+			<li>Uruchomienie programu wizualizującego: <code>python3 osc.py</code></li>
+			<li>Załadowanie implementacji algorytmów sortujących w Sonic Pi: <a href="artifacts/osc/sound.rb">sound.rb</a></li>
+			<li>Uruchomienie jednego z sortowań dla przykładowych danych:
+				<pre><code>use_bpm 520
+use_synth :tri
+
+sort_array("Bitonic Sort",
+           method(:bitonic_sort),
+           (1..128).ring.reverse.to_a)</code></pre>
+			</li>
+		</ol>
+
+		<p>Prezentacja wszystkich zaimplementowanych sortowań:</p>
+
+<pre><code>use_bpm 520
+use_synth :tri
+
+sort_array("Insertion Sort (linear lookup)",
+           method(:insertion_sort_linear),
+           (1..100).ring.reverse.to_a)
+
+sleep 1
+
+
+sort_array("Radix Sort (Least Significant Digit)",
+           method(:radix_sort_lsd),
+           (1..256).ring.shuffle.to_a)
+
+sleep 1
+
+sort_array("Bitonic Sort",
+           method(:bitonic_sort),
+           (1..128).ring.shuffle.to_a)
+
+sleep 1
+
+sort_array("Coctail Shaker Sort",
+           method(:coctail_shaker_sort),
+           (1..64).ring.shuffle.to_a)
+
+sleep 1
+
+sort_array("Selection Sort",
+           method(:selection_sort),
+           (1..64).ring.shuffle.to_a)
+
+sleep 1
+
+with_fx :lpf, cutoff: :c8 do
+  sort_array("Bubble Sort",
+             method(:bubble_sort),
+             (1..64).ring.shuffle.to_a)
+end
+</code></pre>
+
+  </body>
+</html>
+
