@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,nosnippet,noodp,noarchive,noimageindex">
+    <title>Zajęcia 13 | Muzyka algorytmiczna</title>
+        <style>
+        html {
+            color-scheme: light dark;
+        }
+        body {
+            font-family: system-ui, sans-serif;
+            line-height: 1.6;
+            margin-inline: auto;
+            max-width: 80ch;
+        }
+        h2 {
+          border-top: 1px solid;
+          border-bottom: 1px solid;
+        }
+        dt {
+          font-weight: bold;
+        }
+        .warning {
+          border: 1px solid #ff000099;
+          background-color: #ff000030;
+          padding-inline: 1rem;
+          border-radius: 5px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+          img {
+            filter: invert(1);
+          }
+        }
+        </style>
+  </head>
+  <body>
+    <header>
+      <a href="/">Muzyka algorytmiczna</a>
+    </header>
+    <h1>Zajęcia 13 (2025-01-08)</h1>
+
+    <ul>
+      <li><a href="#goal">Cel zajęć</a></li>
+      <li><a href="#todo">Zadania</a></li>
+    </ul>
+
+    <h2 id="goal">Cel zajęć</h2>
+    <ol>
+      <li>Zaprezentowanie przykładów kompozycji zaliczeniowych</li>
+      <li>Przedstawienie dodatkowych inspiracji algorytmicznych</li>
+    </ol>
+
+    <h2 id="todo">Zadania (do realizacji na zajęciach)</h2>
+
+    <h3>Część 1</h3>
+
+    <ol>
+      <li>Zmień domyślną oktawę dźwięków, tak by <code>play :c</code> wykonało dźwięk <code>:c6</code></li>
+      <li>Zmodyfikuj następujący program, tak by jeden z wątków wykonywał się dwa razy szybciej (nie modyfikuj instrukcji sleep):
+<pre><code>use_bpm 60
+
+live_loop :a do
+  play :c4
+  sleep 1
+end
+
+live_loop :b do
+  play :e4
+  sleep 1
+end</code></pre></li>
+<li>Zmodyfikuj następujący program, tak by jeden z wątków wykonywał się dwa razy szybciej (nie modyfikuj instrukcji sleep):
+<pre><code>in_thread do
+  loop do
+    play :c4
+    sleep 1
+  end
+end
+
+
+in_thread do
+  loop do
+    play :e4
+    sleep 1
+  end
+end</code></pre>
+Zwróć uwagę, że w podanym fragmencie kodu nie znamy odgórnie bpm - pomocna może być funkcja <a href="sonic.html#current_bpm"><code>current_bpm</code></a>.</li>
+
+<li>Zmodyfikuj następującą pętlę tak by miała 20% szans by się zatrzymać przy każdym powtórzeniu:
+<pre><code>live_loop :maybe_stops do
+  play :c4
+  sleep 1
+end</code></pre></li>
+
+<li>Zmodyfikuj kod tak by pętle <code>foo</code> i <code>bar</code> wykonują się naprzemiennie:
+
+<pre><code>live_loop :foo do
+  play :c4
+  sleep 1
+end
+
+live_loop :bar do
+  play :e4
+  sleep 1
+end</code></pre>
+  <ol style="list-style-type: lower-alpha">
+    <li>przez dodanie wywołań funkcji <code>cue</code> i <code>sync</code></li>
+    <li>przez modyfikację i dodanie dodatkowych wywołań funkcji <code>sleep</code></li>
+    <li>przez modyfikajcę funkcji sleep i wykorzystanie parametru <code>delay</code> funkcji <code>live_loop</code></li>
+  </ol>
+</li>
+<li>Zmień kod tak by fragmenty wykonały się w kolejności alfabetycznej bez zmiany ich kolejności w kodzie:
+<pre><code>use_bpm 60
+
+in_thread(name: :b) do
+  play_pattern_timed (ring :e4, :f4).repeat(16), 1/8.0
+end
+
+in_thread(name: :c) do
+  play_pattern_timed (ring :e4).repeat(16), 1/16.0
+end
+
+in_thread(name: :a) do
+  play_pattern_timed (ring :f4, :e4).repeat(8), 1/4.0
+end</code></pre>
+  <ol style="list-style-type: lower-alpha">
+    <li>przez dodanie wywołań funkcji <code>cue</code> i <code>sync</code></li>
+    <li>przez dodanie wywołań funkcji <code>sleep</code></li>
+  </ol>
+</li>
+    </ol>
+
+    <h3>Część 2</h3>
+
+    <ol>
+      <!-- https://www.jamminpower.org/THX.html -->
+      <li>Stwórz utwór o następującej strukturze:
+        <ol style="list-style-type: lower-alpha">
+          <li>Wylosuj 30 dźwięków o losowej wysokości od 200Hz do 400Hz. Tworzą one akord początkowy.</li>
+          <li>Odtwórz akord początkowy, stopniowo zwiększając jego głośność</li>
+          <li>Powoli przejdź z akordu początkowego do następującego:
+            <code>(ring :d1, :d2, :a2, :d3, :a3, :d4, :a4, :d5, :a5, :d6, :fs6)</code>,
+          cały czas zwiększając głośność aż do osiągnięcia maksymalnej głośności (pełnej, 1.0)</li>
+        </ol>
+      </li>
+      <li>Wykorzystując sample dostępne na stronie <a href="https://www.ztm.poznan.pl/otwarte-dane/zapowiedzi-glosowe/">ZTM Poznań</a> oraz <a href="https://archive.org/details/KmartOctober1989">
+Kmart October 1989 </a>, stwórz utwór o następującej strukturze:
+        <ol style="list-style-type: lower-alpha">
+          <li>Przez całą długość utworu wykonywany jest sample Kmart October (pierwsze 2 minuty. Przed załadowaniem do Sonic Pi należy skrócić oryginalny plik by ułatwić załadowanie w Sonic Pi. Rekomendowanym programem do skrócenia jest Audacity).</li>
+          <li>Sample poddawane są obróbce np. efektami, przesunięciem wysokości dźwięków, itp.</li>
+          <li>Z losowymi odstępami wykonywane są losowe sample od ZTM Poznań, z efektami takimi jak reverb, slicer, echo.</li>
+        </ol>
+        <p><em>Ciekawostka</em>: ZTM Poznań udostępnia też <a href="https://www.ztm.poznan.pl/otwarte-dane/gtfsfiles/">trasy tramwajów</a>, z odstępami między przystankami, pozwalając na stworzenie rekreacji przejazdu tramwajem.</p>
+    </ol>
+
+    <h3>Część 3</h3>
+
+    <p>Dla poniższego programu wykonaj następujące zadania:</p>
+
+    <pre><code>use_bpm 60
+use_synth :piano
+
+define :play_section do |snds, durations|
+  play_pattern_timed(snds, durations)
+end
+
+define :joy do
+  # NIE MODYFIKUJ FUNKCJI JOY / DO NOT MODIFY JOY FUNCTION
+  define :repeats do
+    x = [76, 76, 77, 79, 79, 77, 76, 74, 72, 72, 74, 76]
+    play_section x, (ring 0.5).repeat(x.length)
+  end
+
+  repeats
+  play_section [76, 74, 74], [0.75, 0.25, 1]
+  repeats
+  play_section [74, 72, 72], [0.75, 0.25, 1]
+end
+
+joy</code></pre>
+
+    <ol>
+      <li>Zdefiniuj dwóch równoległych wykonawców, jeden oktawę wyżej emulujący instrumenty smyczkowe, jeden z domyślną oktawą, używając instrumentu klawiszowego.</li>
+      <li>Zmień implementację funkcji <code>play_section</code>, tak by wysyłała komunikaty MIDI do zewnętrznego syntezatora.</li>
+      <li>Zmień implementację funkcji <code>play_section</code>, tak by automatycznie harmonizowała melodię.</li>
+    </ol>
+
+  </body>
+</html>
