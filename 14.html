@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,nosnippet,noodp,noarchive,noimageindex">
+    <title>Zajęcia 14 | Muzyka algorytmiczna</title>
+        <style>
+        html {
+            color-scheme: light dark;
+        }
+        body {
+            font-family: system-ui, sans-serif;
+            line-height: 1.6;
+            margin-inline: auto;
+            max-width: 80ch;
+        }
+        h2 {
+          border-top: 1px solid;
+          border-bottom: 1px solid;
+        }
+        dt {
+          font-weight: bold;
+        }
+        .warning {
+          border: 1px solid #ff000099;
+          background-color: #ff000030;
+          padding-inline: 1rem;
+          border-radius: 5px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+          img {
+            filter: invert(1);
+          }
+        }
+        </style>
+  </head>
+  <body>
+    <header>
+      <a href="/">Muzyka algorytmiczna</a>
+    </header>
+    <h1>Zajęcia 14 (2025-01-15)</h1>
+
+    <ul>
+      <li><a href="#goal">Cel zajęć</a></li>
+      <li><a href="#todo">Zadania</a></li>
+			<li><a href="#vis">Wizualizacje</a></li>
+    </ul>
+
+    <h2 id="goal">Cel zajęć</h2>
+    <ol>
+      <li>Zaprezentowanie wstępnej formy kompozycji zaliczeniowych</li>
+			<li>Przykłady technik wizualizacji utworów</li>
+    </ol>
+
+
+		<h2 id="vis">Wizualizacje</h2>
+
+		<p>(poniższe zagadnienia są ponadprogramowe)</p>
+
+
+		<h3>p5.js</h3>
+
+		<p>Otwartoźródłowa biblioteka dla języka JavaScript, oferująca przyjazne tworzenie animacji.</p>
+
+		<ul>
+			<li><a target="_blank" href="https://editor.p5js.org/RobertBendun/sketches/bQGZ7NXMO">Przykład animacji na podstawie strumenia Audio</a></li>
+			<li><a target="_blank" href="https://editor.p5js.org/RobertBendun/sketches/Dc6f4vgYE">Przykład animacji na podstawie komunikatów MIDI</a></li>
+			<li><a target="_blank" href="https://www.youtube.com/playlist?list=PLRqwX-V7Uu6aFcVjlDAkkGIixw70s7jpW">Wideoporadnik przetwarzania dźwięku z p5.js</a></li>
+			<li><a target="_blank" href="https://p5js.org/reference/">Dokumentacja</a></li>
+		</ul>
+
+
+		<h3>Hydra</h3>
+
+		<p>Środowisko algorytmicznego tworzenia wizualizacji w przeglądarce.</p>
+
+		<h4>Audio</h4>
+
+		<ul>
+			<li><a target="_blank" href="https://hydra.ojack.xyz/docs/docs/learning/sequencing-and-interactivity/audio/">Dokumentacja wsparcia audio w Hydra</a></li>
+			<li><a target="_blank" href="https://www.howtogeek.com/217348/how-to-record-the-sound-coming-from-your-pc-even-without-stereo-mix/#record-audio-from-computer-with-stereo-mix-or-what-u-hear">Włączenie modułu rejestrującego audio w systemie Windows</a> (może nie być dostępne)</li>
+		</ul>
+
+
+
+		<h4>MIDI</h4>
+
+		<p class="warning">
+			Przetwarzanie MIDI zużywa znaczne zasoby sprzętowe,
+			prowadząc do możliwego zakończenia działania przeglądarki.
+			(w zależności od dostępnych zasobów; testowane z wykorzystaniem przeglądarki Firefox 133.0.3, Linux, Thinkpad x270 i5-7300U, Intel HD Graphics 620).
+		</p>
+
+		<ul>
+			<li><a target="_blank" href="https://github.com/ojack/hydra-standalone/blob/master/docs/midi.md">Dokumentacja uruchomienia wsparcia MIDI</a></li>
+		</ul>
+
+		<p>W przypadku komputerów o mniejszej mocy pełen przykład podany w ramach dokumentacji może być zbyt wymagający.
+		Rekomendowane jest wcześniejsze wykorzystanie wyłącznie ostatniej linijki skryptu Hydra do testów.</p>
+
+  </body>
+</html>
