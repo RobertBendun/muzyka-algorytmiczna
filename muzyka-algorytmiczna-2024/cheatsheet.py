@@ -73,7 +73,7 @@ else:
 	</head>
 	<body>
         <header style="text-align: center; margin-bottom: 1em">
-			<a href="/">Muzyka algorytmiczna</a>
+			<a href="index.html">Muzyka algorytmiczna</a>
 		</header>
         <main>
           {content}

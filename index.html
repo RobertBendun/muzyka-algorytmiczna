@@ -4,8 +4,9 @@
 		<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="robots" content="noindex,nofollow,nosnippet,noodp,noarchive,noimageindex">
-	<title>Muzyka algorytmiczna</title>
+	<title>Wybór przedmiotu</title>
 <style>
+* { box-sizing: border-box; margin: 0; }
 html { color-scheme: light dark; }
 body {
 	display: flex;
@@ -14,120 +15,31 @@ body {
 	justify-content: center;
 	align-items: center;
 	min-height: 100vh;
-	font-size: 16px;
+	font-size: 16pt;
 	font-family: system-ui, sans-serif;
 	gap: 1ex;
+}
+h2 {
+	padding-top: 2rem;
 }
 </style>
 	</head>
 	<body>
-		<h1>Materiały do zajęć Muzyka Algorytmiczna</h1>
+		<h2>Muzyka algorytmiczna</h2>
 
-		<p>Instalacja Sonic Pi:
-			<a target="_blank" href="https://aur.archlinux.org/packages/sonic-pi">Arch Linux</a>,
-			<a target="_blank" href="https://sonic-pi.net/#macos">macOS</a>,
-			<a target="_blank" href="https://launchpad.net/ubuntu/jammy/+package/sonic-pi">Ubuntu 22.04</a>,
-			<a target="_blank" href="https://sonic-pi.net/">Windows</a><br>
-			<a target="_blank" href="https://sonic-pi.net/tutorial.html">Oficjalny tutorial Sonic PI</a><br>
-		Instalacja Helm: <a href="https://tytel.org/helm/downloads/">Linux/macOS/Windows</a>, <a href="https://tytel.org/static/docs/helm_manual.pdf">dokumentacja</a><br>
-		Instalacja loopMIDI: <a href="https://www.tobias-erichsen.de/software/loopmidi.html">Windows</a>
-		</p>
+		<a href="muzyka-algorytmiczna-2024/">Semestr zimowy 2024/2025</a>
+		<a href="#">Semestr letni 2024/2025</a>
 
+		<h2>Podstawy programowania</h2>
 
-		<h2>Dodatkowe materiały w ramach zajęć</h2>
-		<a href="cheatsheet.html">Python - Ruby cheatsheet</a>
-		<a href="notation.html">Notacja muzyczna: wykład, a Sonic Pi</a>
-		<a href="sonic.html">Dokumentacja funkcji w Sonic Pi</a>
+		<a href="podstawy-programowania-2025/">Semestr letni 2024/2025</a>
 
-		<h2>Notatki z zajęć i zadania</h2>
-		<p style="margin: 0; padding: 0"><strong style="font-size: 2em"><a href="koncert.html">Koncert zaliczeniowy</a></strong></p>
-		<table>
-			<tr>
-				<th scope="col">Notatka</th>
-				<th scope="col">Zadanie</th>
-				<th scope="col">Poruszone tematy</th>
-			</tr>
-			<tr>
-				<th scope=row><a href="01.html">01</a></th>
-				<td><a href="01.html#todo">Różne oktawy</a></td>
-				<td>Odtwarzanie dźwięków, live_loop, ADSR</td>
-			</tr>
-			<tr>
-				<th scope=row><a href="02.html">02</a></th>
-				<td><a href="02.html#todo">Barwa</a></td>
-				<td>play vs synth, control, syntezatory, wątki, synchronizacja, tick</td>
-			</tr>
-			<tr>
-				<th scope=row><a href="03.html">03</a></th>
-				<td><a href="03.html#todo">Skala</a></td>
-				<td>Tablicowe struktury danych (vector, ring, ramp),
-					synchronizacja, cue, sync,
-					generowanie skal</td>
-			</tr>
-			<tr>
-				<th scope=row><a href="04.html">04</a></th>
-				<td><a href="04.html#todo">Forma</a></td>
-				<td>Liczby pseudolosowe, get, set, organizacja w oparciu o czas</td>
-			</tr>
-			<tr>
-				<th scope=row><a href="05.html">05</a></th>
-				<td><a href="05.html#todo">Harmonia</a></td>
-				<td>Akordy, mikrotony, OSC</td>
-			</tr>
-			<tr>
-				<th scope=row><a href="06.html">06</a></th>
-				<td><a href="06.html#todo">Helm</a></td>
-				<td>Obsługa syntezatora Helm</td>
-			</tr>
-			<tr>
-				<th scope=row><a href="07.html">07</a></th>
-				<td><a href="07.html#todo">Minimalizm</a></td>
-				<td>Sample, równolegli wykonawcy</td>
-			</tr>
-			<tr>
-				<th scope=row><a href="08.html">08</a></th>
-				<td><a href="08.html#todo">MIDI</a></td>
-				<td>MIDI</td>
-			</tr>
-			<tr>
-				<th scope=row><a href="09.html">09</a></th>
-				<td><a href="09.html#todo">Serializm</a></td>
-				<td>Funkcje, operacje serialistyczne</td>
-			</tr>
-			<tr>
-				<th scope=row><a href="10.html">10</a></th>
-				<td><a href="10.html#todo">MIDI 2</a></td>
-				<td>Reaper, Decent Sampler, gramatyki bezkontekstowe</td>
-			</tr>
-			<tr>
-				<th scope=row><a href="11.html">11</a></th>
-				<td>-</td>
-				<td>Koncert zaliczeniowy, wejście MIDI Sonic Pi, przykłady muzyki algorytmicznej</td>
-			</tr>
-			<tr>
-				<th scope=row>12</th>
-				<td>-</td>
-				<td>Prezentacja koncepcji, wsparcie tworzenia utworów na koncert, powtórzenie materiału</td>
-			</tr>
-			<tr>
-				<th scope=row><a href="13.html">13</a></th>
-				<td>-</td>
-				<td>Zadania powtórzeniowe</td>
-			</tr>
-			<tr>
-				<th scope=row><a href="14.html">14</a></th>
-				<td>-</td>
-				<td>Pierwszy przyrost kompozycji zaliczeniowej, przykłady wizualizacji</td>
-			</tr>
-			<tr>
-				<th scope=row>15</th>
-				<td>-</td>
-				<td>Finalna forma kompozycji zaliczeniowej</td>
-			</tr>
-		</table>
+		<h2>Programowanie w języku C</h2>
+
+		<a href="#">Semestr letni 2024/2025</a>
 
 
-		<h2>Dodatkowe materiały publiczne</h2>
-		<a target="_blank" href="https://www.youtube.com/watch?v=IjGPjvvkhSE">ELEKTRONIKA - Krzysztof Knittel</a>
+		<h2>Kontakt</h2>
+		<a href="mailto:robben@amu.edu.pl">robben@amu.edu.pl</a>
 	</body>
 </html>
