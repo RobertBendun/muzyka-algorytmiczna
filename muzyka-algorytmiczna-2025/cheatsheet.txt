@@ -1,0 +1,196 @@
+---
+Uruchamianie skryptów
+python skrypt.py
+
+ruby skrypt.rb
+
+REPL
+python
+
+irb
+
+Komentarze
+# komentarz liniowy
+
+# komentarz liniowy
+=begin
+komentarz wieloliniowy
+=end
+
+Zmienne i stałe
+PI = 3.14
+logiczna = True
+nic = None
+całkowita = 4
+zmiennoprzecinkowa = 4.0
+
+liczba = 40
+PI = 3.14
+logiczna = true
+nic = nil
+całkowita = 4
+zmiennoprzecinkowa = 4.0
+ułamek = 1/4r
+
+Obliczenia
+3 ** -1
+import math
+math.cos(0) # = 1
+3 % 2 # = 1
+
+3 ** -1 # = 1/3
+Math.cos(0) # = 1
+3 % 2 # = 1
+
+Tablice
+tab = [1,2,3,4]
+tab[1] # = 2
+tab[1:3] # = [2,3]
+tab[1:-1] # = [2,3]
+tab.append(5)
+
+tab = [1,2,3,4]
+tab[1] # = 2
+tab[1...3] # = [2,3]
+tab[1...-1] # = [2,3]
+tab[1..3] # = [2,3,4]
+tab << 5
+
+Łańcuchy znaków
+"foo"
+"foo"[0] # = "f"
+
+"foo"
+"foo"[0] # = "f"
+
+Symbole
+
+
+:symbol
+
+Słowniki
+d = {"foo": 10, "bar": 42}
+d["foo"] # = 10
+d["baz"] = 30
+
+dstr = {"foo"=>10, "bar"=>42}
+dstr["foo"] # = 10
+dstr["baz"] = 30
+dsym = {foo: 10, bar: 20}
+dsym[:foo] # = 10
+dsym[:baz] = 30
+
+---
+Instrukcja warunkowa
+if bar > 0:
+	print "Większe"
+elif bar == 0:
+	print "Równe"
+else:
+	print "Mniejsze"
+
+if bar > 0
+	puts "Większe\n"
+elsif bar == 0
+	puts "Równe\n"
+else
+	puts "Mniejsze\n"
+end
+
+Wyrażenie warunkowe
+y = "NaN" if x == x
+	else "nie NaN"
+
+y = x == x ? "NaN"
+           : "nie NaN"
+
+Pętla nieskończona
+while True:
+	print("pętla")
+
+loop do
+	puts "pętla"
+end
+
+Pętla warunkowa
+while warunek:
+	print("spełniony!")
+
+while warunek
+	puts "spełniony"
+end
+
+Iteracja tablicy
+for x in [1,2,3]:
+	print(x)
+
+for x in [1,2,3] do
+	print(x)
+end
+[1,2,3].each do |x|
+	print(x)
+end
+
+Powtórz n razy
+for _ in range(n):
+	print("hello")
+
+n.times do
+	puts "hello"
+end
+
+Iteruj liczby z zakresu
+for x in range(60, 70):
+	print(x)
+
+(60...70).each do |x|
+	print(x)
+end
+
+Zakończ iterację
+break
+
+break
+
+Przejdź do kolejnej iteracji
+continue
+
+next
+
+Powtórz iterację
+
+
+redo
+
+---
+Definicja funkcji
+def factorial(x):
+	if x == 0:
+		return 1
+	return x * factorial(x-1)
+
+def factorial(x)
+	if x == 0
+		return 1
+	end
+	x * factorial(x-1)
+end
+
+Wywołanie funkcji
+factorial(5)
+add(1, 2)
+
+factorial(5)
+factorial 5
+add(1, 2)
+add 1, 2
+
+Przekazywanie parametrów
+def play_twice(*args, **kwargs):
+	play(*args, **kwargs)
+	play(*args, **kwargs)
+
+def play_twice(*args)
+	play(*args)
+	play(*args)
+end

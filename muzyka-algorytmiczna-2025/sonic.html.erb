@@ -1,0 +1,98 @@
+<%
+all = []
+load 'sonic-pi/core.rb';  all += $all
+load 'sonic-pi/maths.rb'; all += $all
+load 'sonic-pi/midi.rb';  all += $all
+load 'sonic-pi/sound.rb'; all += $all
+load 'sonic-pi/western_theory.rb'; all += $all
+$all = all.reduce({}) do |acc, entry|
+  acc[entry[:name]] = entry unless entry.key?(:hide) && entry[:hide]
+  acc
+end
+%>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="robots" content="noindex,nofollow,nosnippet,noodp,noarchive,noimageindex">
+	<title>Muzyka algorytmiczna</title>
+<style>
+html { color-scheme: light dark; }
+body {
+	font-size: 16px;
+  font-family: system-ui, sans-serif;
+  margin-inline: auto;
+  max-width: 80ch;
+}
+.arg_type {
+  opacity: 0.5;
+}
+.function {
+  font-weight: bold;
+}
+section:not(:last-child) {
+  border-bottom: 1px dotted;
+}
+details[open] {
+  border: 1px dotted;
+}
+</style>
+	</head>
+  <body>
+    <a href="index.html">Muzyka algorytmiczna</a>
+    <h1>Dokumentacja funkcji Sonic Pi</h1>
+
+    <!-- TODO: Sonic Pi version number -->
+    <p><%= $all.length %> funkcji </p>
+
+    <table>
+      <% for name in $all.keys.sort %>
+      <tr>
+        <th><a href="#<%= name %>"><%= name %></a></th>
+        <td><%= $all[name][:summary] %></td>
+      </tr>
+      <% end %>
+    </table>
+
+    <% for name in $all.keys.sort %>
+      <section>
+        <h2 id="<%= name %>"><%= $all[name][:summary] %></h2>
+        <code><span class="function"><%= name %></span><%=
+          s = []
+          for arg in $all[name][:args] do
+            s << "#{arg[0]} <span class=\"arg_type\">(#{arg[1]})</span>"
+          end
+          s ? " " + s.join(", ") : ""
+        %></code>
+        <%=
+          IO.popen "lowdown", "r+" do |f|
+            f.write $all[name][:doc]
+            f.close_write
+            f.read
+          end
+        %>
+        <% if $all[name][:opts] then %>
+          <table>
+          <% $all[name][:opts].each do |key, value| %>
+            <tr>
+              <th><code><%= key %></code></th>
+              <td><%= value %></td>
+            </tr>
+          <% end %>
+            <caption>Options for <%= name %></caption>
+          </table>
+        <% end %>
+        <% if $all[name][:examples] then %>
+          <details>
+            <summary>Examples</summary>
+          <% for example in $all[name][:examples] %>
+            <pre><code><%= example.chomp %></code></pre>
+          <% end %>
+          </details>
+        <% end %>
+        <p>Introduced in <%= $all[name][:introduced] %></p>
+      </section>
+    <% end %>
+	</body>
+</html>
