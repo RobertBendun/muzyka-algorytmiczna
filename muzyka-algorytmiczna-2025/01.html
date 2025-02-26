@@ -31,7 +31,7 @@
       <li><a href="#examples1">Przykładowe fragmenty kodu w Sonic Pi</a></li>
     </ul>
 
-    <h2 id="todo">Zadanie (na 2025-03-05)</h2>
+    <h2 id="todo">Zadanie (na 2025-03-05, 1p)</h2>
     <p>Przygotowanie krótkiego utworu (~30s) w środowisku Sonic Pi, spełniającego następujące wymagania:</p>
     <ol>
       <li>Wykorzystuje funkcje: <code>live_loop</code>, <code>sleep</code>, <code>play</code></li>
@@ -42,6 +42,7 @@
 		<h2 id="during_class">Zadania na zajęciach</h2>
 
 		<ol>
+			<li>Stwórz repozytorium w ramach <a href="https://git.wmi.amu.edu.pl" target="_blank">wydziałowego serwisu Gitea</a> oraz udostępnij je osobie prowadzącej zajęcia.</li>
       <li>Zmodyfikuj następujący program, tak by jeden z wątków wykonywał się dwa razy szybciej (nie modyfikuj instrukcji sleep):
 <pre><code>use_bpm 60
 
@@ -90,9 +91,9 @@ play 67</code></pre>
 <pre><code>play :c4, attack: 1, decay: 1, sustain: 1, release: 1</code></pre>
 
     <h3>Akord</h3>
-<pre><code>play :c4
-play :e4
-play :g4
+<pre><code>play :c4, amp: 0.3
+play :e4, amp: 0.3
+play :g4, amp: 0.3
 sleep 1</code></pre>
 
 <h3>Zmiana oktawy dźwięku</h3>
