@@ -50,6 +50,62 @@
 			<li><code>CTRL+Lewy przycisk myszy</code> - zachowanie jak poza trybem edycji</li>
 		</ul>
 
+
+		<h2>Wejścia gorące i zimne; problem aktualizacji</h2>
+
+		<p>Obiekty posiadają wejścia <em>gorące</em> i <em>zimne</em>.
+		Komunikaty otrzymane na wejście gorące, powodują wysłanie komunikatu przez obiekt i zapamiętują warotść.
+		Komunikaty otrzymane na wejście zimne nie powodują wysłania komunikatu przez obiekt, a jedynie zapamiętują wartość.</p>
+
+		<h4>Przykład problemu aktualizacji</h4>
+
+		<p>Podział na wejścia zimne i ciepłe powoduje problem z aktualizacją - wynik poniższego układu zależy od kolejności wysłania komunikatów.</p>
+
+		<div style="display: flex; gap: 5px; margin-bottom: 1rem">
+			<canvas id="example01" style="width: 200px; height: 200px"></canvas>
+			<div>
+				<p>Po lewej zaprezentowano przykład zachowania ciągłęgo wysyłania komunikatu na zimne wejście - obiekt mnożenia nie tworzy dalej wyniku, a wyłącznie zapamiętuje przesłaną wartość.</p>
+				<p>Kliknij w lewy przycisk <code>3</code> aby wysłać komunikat do gorącego wejścia.</p>
+			</div>
+		</div>
+
+
+		<div style="display: flex; gap: 5px">
+			<canvas id="example02" style="width: 200px; height: 200px"></canvas>
+			<div>
+				<p>Po lewej zaprezentowano przykład zachowania ciągłęgo wysyłania komunikatu na gorące wejście - obiekt mnożenia tworzy dalej wynik, ale nie ma zdefiniowanej prawej strony mnożenia!</p>
+				<p>Kliknij w prawy przycisk <code>4</code> aby wysłać komunikat do zimnego wejścia.
+				(komunikat zostanie wysłany po zakończeniu animacji lewej strony)</p>
+			</div>
+		</div>
+
+		<h4>Rozwiązanie problemu aktualizacji dla lewego źródła</h4>
+
+		<p>Cel: Wysyłając komunikat po lewej, chcemy przy pierwszym kliknięciu otrzymać odpowiedni wynik.</p>
+
+		<div style="display: flex; gap: 5px">
+			<canvas id="example03" style="width: 200px; height: 225px"></canvas>
+			<div>
+				<p>Wyślij komunikat <code>3</code> poprzez naciśnięcie go.
+				Dzięki zastosowaniu <code>pipe</code> przesyłana wartość jest zapamiętywana, a wykonywanie tej ścieżki zatrzymane.
+				Pozwala to na przejście do ścieżki prawej, która wyzwala komunikat <code>4</code>, który przesyła wartość do zimnego wejścia obiektu mnożenia.</p>
+				<p>Po chwili (niezwykle krótkiej) powracamy do <code>pipe</code>, które przesyła otrzymany wcześniej komunikat 3 do gorącego wejścia obiektu mnożenia, tym samym wyzwalając go.</p>
+			</div>
+		</div>
+
+		<h4>Rozwiązanie problemu aktualizacji dla prawego źródła</h4>
+
+		<p>Cel: Wysyłając komunikat po prawej, chcemy przy pierwszym kliknięciu otrzymać odpowiedni wynik.</p>
+
+		<div style="display: flex; gap: 5px">
+			<canvas id="example04" style="width: 200px; height: 275px"></canvas>
+			<div>
+			</div>
+		</div>
+
+
+		<script src="p5.min.js"></script>
+		<script src="01.js"></script>
   </body>
 </html>
 
