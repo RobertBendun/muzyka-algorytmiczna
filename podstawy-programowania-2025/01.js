@@ -64,7 +64,6 @@ function pd(id, setup) {
 						let lhs = Number(this.input[0] ?? "0");
 						let rhs = Number(this.input[1] ?? "0");
 						this.output[0] = lhs * rhs;
-						console.log(this.msg, lhs, rhs, this.input, this.output);
 						break;
 					}
 
@@ -78,6 +77,25 @@ function pd(id, setup) {
 						this.output[0] = null;
 						break;
 					}
+
+					case '+ 1':
+						this.output[0] = this.input[0] + 1;
+						break;
+
+					case 'f':
+						if (typeof(this.value) !== typeof(0)) {
+							this.value = 0;
+						}
+						if (this.input[1] !== undefined) {
+							this.value = this.input[1];
+							this.input[1] = undefined;
+						}
+						if (typeof(this.input[0]) == typeof(0)) {
+							this.value = this.input[0];
+							this.input[0] = undefined;
+						}
+						this.output[0] = this.value;
+						break;
 
 					default: {
 						throw new Error("unknown object " + this.msg);
@@ -183,7 +201,7 @@ function pd(id, setup) {
 			wire.color = 'red';
 
 			for (let t = 0; t < time; t += p.deltaTime) {
-				if (msg !== null) {
+				if (msg !== null && msg !== 'bang') {
 					p.noStroke();
 					let dx = (wire.dx - wire.sx) * t / time;
 					let dy = (wire.dy - wire.sy) * t / time;
@@ -522,4 +540,27 @@ pd('#example04', ({
 			on_click(rhs),
 		)),
   );
+});
+
+pd('#example05', ({
+	PDMessage, PDObject, PDNumber, PDControlWire,
+	seq, on_click, send, cycle, wait
+}) => {
+  const bang = new PDMessage({msg: "bang", x: 25, y: 25});
+	const f = new PDObject({msg: "f", x: 25, y: 75, inputs: 2, outputs: 1 });
+	const inc = new PDObject({msg: "+ 1", x: 125, y: 75, inputs: 2, outputs: 1 });
+	const res = new PDNumber({msg: "0", x: 25, y: 125});
+
+	const w1 = new PDControlWire(bang, 0, f, 0);
+	const w2 = new PDControlWire(f, 0, inc, 0);
+	const w3 = new PDControlWire(inc, 0, f, 1);
+	const w4 = new PDControlWire(f, 0, res, 0);
+
+  return cycle(() => seq(
+		on_click(bang),
+		send(w1, 1000),
+		send(w4, 1500),
+		send(w2, 1500),
+		send(w3, 1000),
+	));
 });

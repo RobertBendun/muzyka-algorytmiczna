@@ -26,17 +26,26 @@
 		</header>
     <h1>Zajęcia 1 (2025-02-21)</h1>
 
-
     <h2 id="goal">Treści do realizacji</h2>
     <ol>
       <li>Instalacja środowiska Pure Data</li>
       <li>Podstawowa obsługa programu Pure Data</li>
       <li>Pierwsze dźwięki</li>
+			<li>Wejścia zimne i gorące obiektów</li>
     </ol>
+
+		<h2>Pliki z zajęć</h2>
+
+		<a href="zaj1-sin.pd">zaj1-sin.pd</a>
 
 		<h2>Podstawa obsługi Pure Data</h2>
 
 		<h3>Pojęcia</h3>
+
+		<ul>
+			<li>Obiekt</li>
+			<li>Komunikat</li>
+		</ul>
 
 		<h3>Skróty klawiszowe</h3>
 
@@ -44,7 +53,6 @@
 			<li><code>CTRL+1</code> - obiekt</li>
 			<li><code>CTRL+2</code> - komunikat</li>
 			<li><code>CTRL+3</code> - selektor liczbowy</li>
-			<li><code>CTRL+4</code> - selektor liczbowy</li>
 			<li><code>CTRL+5</code> - komentarz</li>
 			<li><code>CTRL+E</code> - przełączenie w tryb edycji</li>
 			<li><code>CTRL+Lewy przycisk myszy</code> - zachowanie jak poza trybem edycji</li>
@@ -100,6 +108,24 @@
 		<div style="display: flex; gap: 5px">
 			<canvas id="example04" style="width: 200px; height: 275px"></canvas>
 			<div>
+				<p>Wyślij komunikat <code>4</code> poprzez naciśnięcie go.
+				Dzięki zastosowaniu <code>delay</code> wykonywanie tej ścieżki zatrzymane, oddając kontrolę do ścieżki prawej, która wyzwala komunikat <code>4</code>, tym samym przesyłając wartość do zimnego wejścia obiektu mnożenia.</p>
+				<p>Następnie kontrola powraca do <code>delay</code>, który tworzy komunikat <code>bang</code>, wyzwalając tym samym poniższy komunikat 3 do gorącego wejścia obiektu mnożenia, produkując wynik.</p>
+			</div>
+		</div>
+
+		<h4>Wykorzystanie wyjść zimnych i gorących: prosty licznik</h4>
+
+		<p>Cel: Wysyłając bang do „układu” chcemy otrzymywać kolejne liczby, zaczynając od 0.</p>
+
+		<div style="display: flex; gap: 5px">
+			<canvas id="example05" style="width: 200px; height: 180px"></canvas>
+			<div>
+				<p>Po lewej zaprezentowano typowy układ tworzący licznik,
+				wykorzystujący wejścia zimne i ciepłe w celu uniknięcia <em>nieskończonej pętli</em>
+				- stanu w którym program „utyka” w danym układzie i powtarza się bez przerwy.</p>
+
+				<p>Aby doprowadzić do stanu nieskończonej pętli zamień wyjście <code>+ 1</code> z wejścia zimnego na ciepłe obiektu <code>f</code>.</p>
 			</div>
 		</div>
 
