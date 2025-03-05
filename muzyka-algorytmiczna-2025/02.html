@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Zajęcia 2 | Muzyka algorytmiczna</title>
+        <style>
+        html {
+            color-scheme: light dark;
+        }
+        body {
+            font-family: system-ui, sans-serif;
+            line-height: 1.6;
+            margin-inline: auto;
+            max-width: 80ch;
+        }
+        h2 {
+          border-top: 1px solid;
+          border-bottom: 1px solid;
+        }
+        </style>
+  </head>
+  <body>
+    <header>
+      <a href="index.html">Muzyka algorytmiczna</a>
+    </header>
+    <h1>Zajęcia 2 (2025-03-05)</h1>
+
+    <h2 id="goal">Cel zajęć</h2>
+    <ol>
+      <li>Synteza dźwięku w Sonic Pi</li>
+      <li>Zaawansowane zarządzanie przepływem kodu w Sonic Pi (niezrealizowano na zajęciach)</li>
+      <li>Live coding</li>
+    </ol>
+
+    <h2 id="todo">Zadanie (na 2025-03-12)</h2>
+
+    <p>Przygotowanie krótkiego utworu (~30s) w środowisku Sonic Pi, spełniającego następujące wymagania:</p>
+    <ol>
+      <li>wykorzystuje obwiednię dźwięku (ADSR)</li>
+      <li>manipuluje barwą dźwięku</li>
+    </ol>
+
+		<h2 id="during_class">Zadania na zajęciach</h2>
+
+		<ol>
+			<li>Wybierz losowy syntezator (albo interesująco brzmiący po tytule), zapoznaj się z jego opcjami (dostępne w wbudowanej dokumentajci Sonic PI) i napisz przykładowy program, pokazujący jak zmienia się brzmienie danego syntezatora po zastosowaniu wybranych opcji.
+			Następnie zaprezentuj go osobie siedzącej obok.</li>
+			<li>Przygotuj program, który prezentuje jak brzmią wybrane interwały:
+				<ul>
+					<li>odtwórz oba dźwięki równocześnie</li>
+					<li>odtwórz dźwięki na zmianę, wolne tempo</li>
+					<li>odtwórz dźwięki na zmianę, szybkie tempo</li>
+					<li>odtwórz dźwięki na zmianę, przyspieszające, a następnie zwalniające tempo</li>
+				</ul>
+				Zwróć uwagę na to jakie <em>wrażenie</em> one sprawiają.
+				Z czym się kojarzą?
+				Jakie emocje wzbudzają?
+			</li>
+			<li>Wybierz <em>ciekawą</em> sekwencję liczbową (możesz wykorzystać <a href="https://oeis.org/">OEIS</a>
+			i wykorzystaj ją jako źródło rytmu.</li>
+		</ol>
+
+    <h2 id="code">Zrzut kodu z zajęć</h2>
+
+		<!-- <p>Plik: <a href="artifacts/02.rb">02.rb</a></p> -->
+
+    <h2 id="synth">Synteza dźwięku w Sonic Pi</h2>
+
+    <h3>Funkcje <code>play</code> i <code>synth</code></h3>
+
+    <pre><code>play :c4
+sleep 1
+
+# zachowuje się tak samo jak:
+
+synth current_synth, note: :c4
+sleep 1</code></pre>
+
+<pre><code>with_synth :blade do
+  play :c4
+  sleep 1
+end
+
+# zachowuje się tak samo jak:
+synth :blade, note: :c4
+sleep 1</code></pre>
+
+    <h3>Jak płynnie przechodzić między dźwiękami</h3>
+    <pre><code># Brak przejścia między dźwiękami
+play :c4, duration: 1
+sleep 1
+play :c5, duration: 1
+sleep 1
+play :c4, duration: 1
+
+# Skokowe przejścia między dźwiękami
+x = play :c4, duration: 3
+sleep 1
+x.control note: :c5
+sleep 1
+x.control note: :c4
+
+# Płynne przejścia między dźwiękami
+x = play :c4, duration: 3, note_slide: 0.5
+sleep 1
+x.control note: :c5
+sleep 1
+x.control note: :c4
+</code></pre>
+
+<h3>Konfiguracja syntezatora</h3>
+
+<p>Poniższe przykłady brzmią identycznie.</p>
+
+<pre><code># Przykład 1
+with_synth :prophet do
+  with_synth_defaults res: 0.9 do
+    play :c4
+    play :e4
+    play :g4
+  end
+  sleep 1
+  with_synth_defaults res: 0.1 do
+    play :c4
+    play :e4
+    play :g4
+  end
+end
+
+# Przykład 2
+
+synth :prophet, note: :c4, res: 0.9
+synth :prophet, note: :e4, res: 0.9
+synth :prophet, note: :g4, res: 0.9
+sleep 1
+
+synth :prophet, note: :c4, res: 0.1
+synth :prophet, note: :e4, res: 0.1
+synth :prophet, note: :g4, res: 0.1
+sleep 1</code></pre>
+
+<h3>Syntezator <code>dsaw</code></h3>
+<pre><code>synth :saw, note: :c4
+synth :saw, note: :cs4
+sleep 1
+
+# detune: 1 przesuwa drugą falę o 1 dźwięk MIDI
+synth :dsaw, note: :c4, detune: 1</code></pre>
+
+<h3>Syntezator <code>:piano</code></h3>
+<pre><code>synth :piano, hard: 1
+sleep 1
+synth :piano, hard: 0.5
+sleep 1
+
+synth :piano, vel: 0.5
+sleep 1
+synth :piano, hard: 0.2
+sleep 1</code></pre>
+
+<h2 id="threads">Wątki, synchronizacja, <code>tick</code></h2>
+
+<h3>Dwie pętle współbieżnie w wątkach</h3>
+
+<pre><code>in_thread do
+  4.times do
+    play :e4, duration: 0.5
+    sleep 1
+  end
+end
+
+sleep 0.5
+
+in_thread do
+  loop do
+    play :f4, duration: 0.5
+    sleep 1
+  end
+end</code></pre>
+
+<h3></h3>
+
+<h3>Pętla sterowana inną pętlą</h3>
+
+<pre><code>live_loop :primary do
+  4.times do
+    play :c5, duration: 0.125
+    sleep 0.25
+  end
+end
+
+live_loop :secondary do
+  play :c4
+  play :e4
+  play :g4
+  sync :primary
+end</code></pre>
+
+<h3>Wykorzystanie <code>tick</code> do odtwarzania kolejnych dźwięków</h3>
+<pre><code>live_loop :up do
+  play (note(:c4) + tick)
+  sleep 1
+end</code></pre>
+
+  </body>
+</html>
+
