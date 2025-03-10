@@ -1,0 +1,65 @@
+= Zajęcia 3 (2025-03-10)
+Robert Bendun <robben@amu.edu.pl>
+:toc:
+:toclevels: 4
+:experimental:
+:source-highlighter: highlight.js
+// Polish translation, courtesy of Łukasz Dziedziul <l.dziedziul@gmail.com> with updates via Matthew Blissett <mblissett@gbif.org>
+:appendix-caption: Dodatek
+:appendix-refsig: {appendix-caption}
+:caution-caption: Uwaga
+:chapter-signifier: Rozdział
+:chapter-refsig: {chapter-signifier}
+:example-caption: Przykład
+:figure-caption: Rysunek
+:important-caption: Ważne
+:last-update-label: Ostatnio zmodyfikowany
+ifdef::listing-caption[:listing-caption: Listing]
+ifdef::manname-title[:manname-title: Nazwa]
+:note-caption: Notka
+:part-signifier: Część
+:part-refsig: {part-signifier}
+ifdef::preface-title[:preface-title: Wstęp]
+:section-refsig: Sekcja
+:table-caption: Tabela
+:tip-caption: Sugestia
+:toc-title: Spis treści
+:untitled-label: Bez tytułu
+:version-label: Wersja
+:warning-caption: Ostrzeżenie
+
+== Zadania
+
+Dla zadania `algorithm.h` zdefiniowano pakiet testów: link:test_algorithm.c[`test_algorithm.c`]. Możesz go wykorzystać by zweryfikować tworzone przez siebie implementacje.
+
+. `calc.c`: program proszący użytkownika o dwie liczby zmiennoprzecinkowe oraz operację matematyczną jaką ma na nich wykonać. Wspierane operacje to: dodawanie (`+`), mnożenie (`*`), potęga (`^`), logarytm (`l`). Wykorzystaj bibliotekę matematyczną oraz funkcję `scanf`.
+. `definitions.c`: stwórz plik z programem, który zawiera poprawne definicje i inicjalizacje (wartościami różnymi od `NULL` jeśli nie powiedziano inaczej) zmiennych:
+.. tablica `integers` będąca wyzerowaną tablicą 256 liczb całkowitych
+.. tablica `buffer` będąca tablicą wyzerowanych 8 bitowych liczb bez znaku o rozmiarze 1MiB
+.. tablice `multiplication` będąca dwuwymiarową tablicą zawierającą wynik mnożenia indeksów danego pola
+.. zmienna `constant` będąca wskaźnikiem na stałą 16 bitową wartość całkowitoliczbową
+. `algorithm.h`, `algorithm.c`: stwórz bibliotekę algorithm zawierającą:
+.. funkcję `void swap_ints(int *a, int *b);`, która zamieni miejscami `a` i `b`
+.. funkcję `void swap(void *a, void *b, size_t size);`, która zamieni miejscami `a` i `b`, gdzie `a` i `b` mają rozmiar `size` (tip: użyj funkcji `memcpy`)
+.. funkcję `int* da_index(int **array, int *size, int index);`, która:
+... dla wywołania `int *a = NULL, n = 0; da_index(&a, &n, k);` zwróci wskaźnik do elementu o indeksie `k` wewnątrz nowo stworzonej tablicy dynamicznej, a zmienne `a` i `n` będą wskazywały odpowiednio początek tablicy i rozmiar
+... dla kolejnych wywołań `da_index(&a, &n, k)` zwróci wskaźnik do wcześniej istniejącego elementu jeśli `k < n`; w przeciwnym wypadku (`k >= n`) powiększy rozmiar tablicy (wykorzystując funkcję `realloc`) i odpowiednio zmodyfikuje zmienne `a` i `n`
+... wykorzystuje w swojej implementacji funkcje `realloc`
+... nowo zaalokowane fragmenty tablicy są zaincjalizowane wartością 0
+... (opcjonalnie) wykorzystuje https://en.wikipedia.org/wiki/Dynamic_array#Growth_factor[optymalne rozmiary pamięci] w przypadku konieczności realokacji
+
+[sidebar]
+Upewnij się, że alokujesz odpowiedni rozmiar tablicy! Alokacja 3 intów to `malloc(3 * sizeof(int))`, a nie `malloc(3)`
+
+
+****
+__Przykład do zadania 2:__ Zmienna `foo` będąca wskaźnikiem na stały wskaźnik 32 bitowej wartości zmiennoprzecinkowej tworzy następujący program:
+
+[source,c]
+----
+float f1 = 3.14;
+float *const f2 = &f1;
+float *const *foo = &f2;
+----
+
+****
