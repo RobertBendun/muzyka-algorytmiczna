@@ -491,25 +491,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li>
 <p>funkcję <code>void swap(void *a, void *b, size_t size);</code>, która zamieni miejscami <code>a</code> i <code>b</code>, gdzie <code>a</code> i <code>b</code> mają rozmiar <code>size</code> (tip: użyj funkcji <code>memcpy</code>)</p>
 </li>
-<li>
-<p>funkcję <code>int* da_index(int **array, int *size, int index);</code>, która:</p>
-<div class="olist lowerroman">
-<ol class="lowerroman" type="i">
-<li>
-<p>dla wywołania <code>int *a = NULL, n = 0; da_index(&amp;a, &amp;n, k);</code> zwróci wskaźnik do elementu o indeksie <code>k</code> wewnątrz nowo stworzonej tablicy dynamicznej, a zmienne <code>a</code> i <code>n</code> będą wskazywały odpowiednio początek tablicy i rozmiar</p>
-</li>
-<li>
-<p>dla kolejnych wywołań <code>da_index(&amp;a, &amp;n, k)</code> zwróci wskaźnik do wcześniej istniejącego elementu jeśli <code>k &lt; n</code>; w przeciwnym wypadku (<code>k &gt;= n</code>) powiększy rozmiar tablicy (wykorzystując funkcję <code>realloc</code>) i odpowiednio zmodyfikuje zmienne <code>a</code> i <code>n</code></p>
-</li>
-<li>
-<p>wykorzystuje w swojej implementacji funkcje <code>realloc</code></p>
-</li>
-<li>
-<p>nowo zaalokowane fragmenty tablicy są zaincjalizowane wartością 0</p>
-</li>
-<li>
-<p>(opcjonalnie) wykorzystuje <a href="https://en.wikipedia.org/wiki/Dynamic_array#Growth_factor">optymalne rozmiary pamięci</a> w przypadku konieczności realokacji</p>
-</li>
 </ol>
 </div>
 </li>
@@ -517,11 +498,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </li>
 </ol>
-</div>
-<div class="sidebarblock">
-<div class="content">
-Upewnij się, że alokujesz odpowiedni rozmiar tablicy! Alokacja 3 intów to <code>malloc(3 * sizeof(int))</code>, a nie <code>malloc(3)</code>
-</div>
 </div>
 <div class="sidebarblock">
 <div class="content">
