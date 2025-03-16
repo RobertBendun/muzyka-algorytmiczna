@@ -447,6 +447,37 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toctitle">Spis treści</div>
 <ul class="sectlevel1">
 <li><a href="#_zadania">Zadania</a></li>
+<li><a href="#_typy">Typy</a>
+<ul class="sectlevel2">
+<li><a href="#_typy_podstawowe_zależne_od_platformy">Typy podstawowe (zależne od platformy)</a>
+<ul class="sectlevel3">
+<li><a href="#_różnica_pomiędzy_int_a_bool">Różnica pomiędzy <code>int</code>, a <code>bool</code></a></li>
+</ul>
+</li>
+<li><a href="#_typy_o_znanym_rozmiarze">Typy o znanym rozmiarze</a></li>
+<li><a href="#_modyfikator_const">Modyfikator <code>const</code></a></li>
+</ul>
+</li>
+<li><a href="#_wskaźniki">Wskaźniki</a>
+<ul class="sectlevel2">
+<li><a href="#_l_wartość_i_r_wartość_ang_l_value_r_value">L-wartość i r-wartość (ang. l-value, r-value)</a></li>
+<li><a href="#_zastosowanie_przekazywanie_wskaźników_do_funkcji">Zastosowanie: przekazywanie wskaźników do funkcji</a></li>
+<li><a href="#_arytmetyka">Arytmetyka</a></li>
+</ul>
+</li>
+<li><a href="#_tablice_statyczne">Tablice statyczne</a>
+<ul class="sectlevel2">
+<li><a href="#_deklaracja_tablicy">Deklaracja tablicy</a></li>
+<li><a href="#_zarządzanie_rozmiarem_tablicy_w_programie">Zarządzanie rozmiarem tablicy w programie</a>
+<ul class="sectlevel3">
+<li><a href="#_makro_definiujące_rozmiar_tablicy">Makro definiujące rozmiar tablicy</a></li>
+<li><a href="#_makro_określające_rozmiar_tablicy_statycznej">Makro określające rozmiar tablicy statycznej</a></li>
+</ul>
+</li>
+<li><a href="#_przekazywanie_tablic_do_funkcji">Przekazywanie tablic do funkcji</a></li>
+</ul>
+</li>
+<li><a href="#_funkcja_scanf">Funkcja <code>scanf</code></a></li>
 </ul>
 </div>
 </div>
@@ -496,9 +527,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 </ol>
 </div>
-</li>
-</ol>
-</div>
 <div class="sidebarblock">
 <div class="content">
 <div class="paragraph">
@@ -515,10 +543,514 @@ float *const *foo = &amp;f2;</code></pre>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_typy">Typy</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_typy_podstawowe_zależne_od_platformy">Typy podstawowe (zależne od platformy)</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><code>void</code>, wykorzystywany głównie do oznaczenia wskaźników wskazujących na dowolny typ i funkcji, które nie zwracają wartości</p>
+</li>
+<li>
+<p><code>char</code> - typ reprezentujący „znak” (co jest prawdziwe <em>wyłącznie</em> dla znaków ASCII). W zależności od implementacji może być równoważny z <code>signed char</code> lub <code>unsigned char</code></p>
+</li>
+<li>
+<p><code>signed char</code>, <code>short</code>, <code>int</code>, <code>long</code>, <code>long long</code> - typy całkowitoliczbowe (ze znakiem), których rozmiar jest zależny od platformy.
+Zdefiniowane są przez następującą nierówność: <code>1 &lt;= sizeof(char) &lt;= sizeof(short) &lt;= sizeof(int) &lt;= sizeof(long) &lt;= sizeof(long long)</code>. Jeśli chcemy wyrazić wprost ich całkowitoliczbowość można dodać prefix <code>signed</code> (np. <code>signed int</code>).</p>
+</li>
+<li>
+<p><code>unsigned char</code>, <code>unsigned short</code>, <code>unsigned int</code>, <code>unsigned long</code>, <code>unsigned long long</code> - odpowiedniki powyższych typów liczbowych, bez znaku.</p>
+</li>
+<li>
+<p><code>float</code>, <code>double</code>, <code>long double</code> - wartości zmiennoprzecinkowe, zgodne z standardem <a href="https://en.wikipedia.org/wiki/IEEE_754">IEEE-754</a>. <code>float</code> jest 32 bitową wartością pojedyńczej precyzji, <code>double 64 bitową wartością pojedyńczej precyzji, a `long double</code> zależy od platformy (co najmniej <code>double</code>)</p>
+</li>
+<li>
+<p><code>bool</code> (przed C23 w pliku <code>&lt;stdbool.h&gt;</code>), przechowujący wartości logiczne</p>
+</li>
+<li>
+<p>operator <code>sizeof(X)</code>, który zwraca wartość typu <code>size_t</code> (<code>&lt;stddef.h&gt;</code>)</p>
+</li>
+<li>
+<p>wynik różnicy wskaźników (<code>p - q</code>, gdzie <code>p</code>, <code>q</code> są wskaźnikami) to wartość typu <code>ptrdiff_t</code> (<code>&lt;stddef.h&gt;</code>)</p>
+</li>
+</ul>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Tabela 1. Rozmiar (w bitach) w zależności od platformy</caption>
+<colgroup>
+<col style="width: 11.1111%;">
+<col style="width: 22.2222%;">
+<col style="width: 22.2222%;">
+<col style="width: 22.2222%;">
+<col style="width: 22.2223%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Typ</th>
+<th class="tableblock halign-left valign-top">Linux/macOS 32bit</th>
+<th class="tableblock halign-left valign-top">Windows 32bit</th>
+<th class="tableblock halign-left valign-top">Windows 64 bit</th>
+<th class="tableblock halign-left valign-top">Linux/macOS 64bit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>char</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">8</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">8</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">8</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">8</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>short</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">16</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">16</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">16</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">16</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>int</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">32</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">32</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">32</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">32</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>long</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">32</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">32</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">32</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">64</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>long long</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">64</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">64</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">64</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">64</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Wskaźnik</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">32</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">32</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">64</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">64</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ptrdiff_t</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">32</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">32</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">64</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">64</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>size_t</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">32</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">32</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">64</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">64</p></td>
+</tr>
+</tbody>
+</table>
+<div class="sidebarblock">
+<div class="content">
+Procesory Intela zazwyczaj wykorzystują wyłącznie 40 bitów do adresacji pamięci na procesorach 64 bitowych.
+</div>
+</div>
+<div class="sect3">
+<h4 id="_różnica_pomiędzy_int_a_bool">Różnica pomiędzy <code>int</code>, a <code>bool</code></h4>
+<div class="paragraph">
+<p>Zwyczajowo w języku C typ <code>int</code> traktowany jest jako główny typ do przechowywania wartości logicznych (prawdy i fałszu). Może to prowadzić jednak do nieintuicyjnych konsekwencji:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ cat bool.c
+#include &lt;stdbool.h&gt;
+#include &lt;stdio.h&gt;
+
+int main()
+{
+  printf("%d\n", (bool)0.5);
+  printf("%d\n", (int)0.5);
+  return 0;
+}
+$ cc bool.c -o bool
+$ ./bool
+1
+0</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_typy_o_znanym_rozmiarze">Typy o znanym rozmiarze</h3>
+<div class="paragraph">
+<p>Dostępne w pliku nagłówkowym <code>&lt;stdint.h&gt;</code>.
+Grupą najczęściej wykorzystywanych typów są: <code>int8_t</code>, <code>int16_t</code>, <code>int32_t</code>, <code>int64_t</code>, <code>uint8_t</code>, <code>uint16_t</code>, <code>uint32_t</code>, <code>uint64_t</code> i są, w praktyce, standardem.</p>
+</div>
+<div class="paragraph">
+<p><a href="https://en.cppreference.com/w/c/types/integer">Dokumentacja w ramach cppreference</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_modyfikator_const">Modyfikator <code>const</code></h3>
+<div class="paragraph">
+<p><code>const</code> pozwala na deklarację zmiennej jako stałej - takiej, której wartości nie będziemy modyfikować.
+Główną siłą <code>const</code> jest informacja dla programisty - można przy pomocy <code>const</code> oznaczyć wskaźniki, które wyłącznie przekazują wartości do funkcji - a zatem gwarantujemy programiście, że nie będziemy ich modyfikować.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">// const przed wskaźnikiem - to co jest stałe to `int` „pod” wskaźnikiem
+void print_int(int const* x)
+{
+  printf("%d\n", *x);
+  // *x += 1; &lt;- to byłby błąd
+  x += 1; // legalne, w tym przypadku bez zastosowania
+}
+
+// const za wskaźnikiem - to co jest stałe to wskaźnik, zmienną możemy modifkować
+void modify(int* const x)
+{
+  // x += 1; &lt;- to byłby błąd
+  *x += 1;
+  printf("%d\n", *x);
+}</code></pre>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+Kilka lat temu w środowisku języka C++ wybuchła rewolucja <a href="http://slashslash.info/eastconst/">„east vs west const”</a>.
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_wskaźniki">Wskaźniki</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Wskaźnik jest to adres do wartości określanego przez wskaźnik typu w pamięci.
+Wskaźniki są <code>wytrychem</code> pozwalającym na realizację wielu funkcjonalności bardziej złożonych języków programowania przy zachowaniu modelu operowania wyłącznie na wartościach liczbowych.</p>
+</div>
+<div class="paragraph">
+<p>Przykładowe zastosowanie wskaźników:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+
+int main()
+{
+  int x = 0;
+  int *a, *b; // aby stworzyć zmiennę typu wskaźnikowego używamy *
+  a = &amp;x; // &amp;x pobiera adres zmiennej x
+  b = &amp;x; // można mieć wiele wskaźników do tej samej zmiennej
+
+  printf("a = %p\n", a); // %p używamy do wypisania wskaźników
+  printf("b = %p\n", b);
+
+  // *a używamy do dereferencji - zamiany adresu w wartość znajdującą się pod danym adresem
+  printf("*a = %d\n", *a);
+  printf("*b = %d\n", *b);
+  printf("x  = %d\n", x);
+
+  // możemy zmodyfikować zmienną przez którykolwiek z wskaźników
+  *a += 1;
+  *b += 1;
+  // a także przez oryginalną nazwę
+  x += 1;
+
+  printf("*a = %d\n", *a);
+  printf("*b = %d\n", *b);
+  printf("x  = %d\n", x);
+
+  return 0;
+}</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_l_wartość_i_r_wartość_ang_l_value_r_value">L-wartość i r-wartość (ang. l-value, r-value)</h3>
+<div class="paragraph">
+<p>Wskaźniki zazwyczaj odwołują się do l-wartości: wartości, których <em>czas życia</em> (ang. lifetime) wykracza poza wyrażenie w którym są użyte.
+Zazwyczaj są to wartości, które są po lewej stronie znaku <code>=</code> - stąd l (ang. left) wartość.</p>
+</div>
+<div class="paragraph">
+<p>W przeciwieństwie do nich są r-wartości, które mogą albo zostać użyte i zmienione w nową r-wartość, albo przypisane do zmiennej, stając się l-wartością.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Przykłady l-wartości: nazwa zmiennej <code>int x; x</code>, dereferencja (<code>*x</code>), wynik preinkrementacji (<code>++x</code>), indeksowanie <code>x[i]</code></p>
+</li>
+<li>
+<p>Przykłady r-wartości: literały liczbowe (<code>5</code>, <code>0.5</code>), wartości zwracane przez funkcję <code>add(5, 4)</code>, wynik operatora <code>sizeof</code>, pobranie adresu <code>&amp;x</code></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_zastosowanie_przekazywanie_wskaźników_do_funkcji">Zastosowanie: przekazywanie wskaźników do funkcji</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+
+void increment(int *x)
+{
+  *x += 1;
+  printf("in increment: %d\n", *x);
+}
+
+int main()
+{
+  int x = 0;
+
+  printf("before increment: %d\n", x);
+  increment(&amp;x);
+  printf("after increment: %d\n", x);
+}</code></pre>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+Wypróbuj powyższy przykład, a następnie zmodyfikuj go tak by nie przekazywać zmiennej x przez wskaźnik, a przez wartość. Jak to wpłynęło na zmianę wartości zmiennej <code>x</code> w funkcji main?
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_arytmetyka">Arytmetyka</h3>
+<div class="paragraph">
+<p>Wskaźniki są adresami, wskazującymi na zmienne określonego typu.
+Pozwala zdefiniować to arytmetykę wskaźników, która zachowuje własności oczekiwane od adresów do wartości danego typu.</p>
+</div>
+<div class="paragraph">
+<p>Wskaźnik <code>p</code> przesunięty w prawo o 1 przez wyrażenie <code>p+1</code> wskazuje na adres kolejnej wartości danego typu.
+Wyrażenie <code>x+1</code> jest tym samym równoważne <code>(char*)x + sizeof(*x)</code>.
+Podobnie można przesuwać wskaźnik w lewo, z wykorzystaniem operatora <code>-</code>.</p>
+</div>
+<div class="paragraph">
+<p>Aby uzyskać wartość znajdującej się w oddalonej o <code>i</code> od <code>x</code> komórce pamięci można zastosować wyrażenie <code>*(x+i)</code>.
+Jest ona równoważna operacji indeksu: <code>x[i]</code>.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+Definicja <code>x[i]</code> jako <code>*(x+i)</code> w języku C pozwala na przemienność operatora indeksu. Dowód: <code>x[i] &equiv; *(x+i) &equiv; *(i+x) &equiv; i[x]</code>.
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_tablice_statyczne">Tablice statyczne</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Tablice statyczne, są to tablice, których rozmiar jest zadeklarowany w programie - a przez to są alokowane przez kompilator w trakcie budowy pliku wykonywalnego.</p>
+</div>
+<div class="sect2">
+<h3 id="_deklaracja_tablicy">Deklaracja tablicy</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">&lt;typ&gt; &lt;nazwa-zmiennej&gt;[&lt;rozmiar&gt;];</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>np. <code>int nums[10];</code>. Jeśli równocześnie inicjalizujemy tablicę, jej długość może być automatycznie wydedukowana z inicjalizacji:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">// Wszystkie tablice xs mają te same długości i elementy
+int xs1[5] = { 1, 2, 3, 0, 0 };
+int xs2[]  = { 1, 2, 3, 0, 0 }; // pominięto rozmiar - jest automatycznie wypełniony przez kompilator
+int xs3[5] = { 1, 2, 3 }; // pominięto 2 ostatnie elementy - automatycznie mają wartość zero</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_zarządzanie_rozmiarem_tablicy_w_programie">Zarządzanie rozmiarem tablicy w programie</h3>
+<div class="paragraph">
+<p>Rozmiar tablicy możemy manualnie wykorzystywać w programie:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">int xs[10];
+
+for (int i = 0; i &lt; 10; ++i) {
+  xs[i] = i;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Nie jest to jednak wygodne i bezpieczne: po zmianie rozmiaru tablicy musimy manualnie zmodyfikować wszystkie miejsca użycia tablicy o nowy rozmiar.</p>
+</div>
+<div class="sect3">
+<h4 id="_makro_definiujące_rozmiar_tablicy">Makro definiujące rozmiar tablicy</h4>
+<div class="paragraph">
+<p>Pierwsze z dwóch popularnych rozwiązań: zdefiniowanie makra, które jest wykorzystywane jako rozmiar tablicy.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#define XS_LEN 10
+int xs[XS_LEN];
+
+for (int i = 0; i &lt; XS_LEN; ++i) {
+  xs[i] = i;
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_makro_określające_rozmiar_tablicy_statycznej">Makro określające rozmiar tablicy statycznej</h4>
+<div class="paragraph">
+<p>Alternatywnym rozwiązaniem jest zdefiniowanie makra, które może pobrać rozmiar tablicy.
+Wykorzystywana jest mechanika operatora <code>sizeof</code>, który zwraca rozmiar <em>całej</em> tablicy.
+Dzieląc rozmiar całej tablicy przez rozmiar pojedyńczego elementu, otrzymujemy liczbę elementów!</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#define ARRAY_LENGTH(X) (sizeof(X) / sizeof(X[0]))
+
+int xs[10];
+
+for (int i = 0; i &lt; ARRAY_LENGTH(xs); ++i) {
+  xs[i] = i;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_przekazywanie_tablic_do_funkcji">Przekazywanie tablic do funkcji</h3>
+<div class="paragraph">
+<p>C nie umożliwia przekazywanie (ani zwracanie) tablic statycznych do funkcji.
+Wymagane jest przekazywanie ich przez wskaźnik.
+Ponieważ wskaźnik nie zawiera informacji o długości tablicy, zazwyczaj przekazywany jest również jej rozmiar:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+
+void print(int *xs, int n)
+{
+  for (int i = 0; i &lt; n; ++i) {
+    if (i == 0) {
+      printf("%d", xs[i]);
+    } else {
+      printf(", %d", xs[i]);
+    }
+  }
+  printf("\n");
+}
+
+int main()
+{
+  int numbers[] = { 1, 2, 3, 4, 5, 6 };
+  print(numbers, 6);
+  return 0;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Alternatywnym sposobem przekazywania tablic jest para wskaźników, jeden wskazujący na początek, drugi na koniec tablicy.
+Zwyczajowo przekazywany jest wskaźnik do elementu za ostatnim elementem tablicy:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+
+void print(int *begin, int *end)
+{
+  for (int *it = begin; it != end; ++it) {
+    if (it == begin) {
+      printf("%d", *it);
+    } else {
+      printf(", %d", *it);
+    }
+  }
+  printf("\n");
+}
+
+/*
+| 1 | 2 | 3 | 4 | 5 | 6 |
+0   1   2   3   4   5   6
+^ begin                 ^ end (begin + 6)
+^ numbers
+*/
+
+int main()
+{
+  int numbers[] = { 1, 2, 3, 4, 5, 6 };
+  print(numbers, numbers + 6);
+  return 0;
+}</code></pre>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+Model 2 jest podstawą dla modelu iteratorów języka C++.
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_funkcja_scanf">Funkcja <code>scanf</code></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Funkcja <code>scanf</code> pozwala na pobieranie wartości z standardowego wejścia.
+Wykorzystuje te same oznaczenia co <code>printf</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+
+int main()
+{
+  int a, b;
+  double c;
+
+  scanf("%d", &amp;a); // wczytaj liczbę całokwitą
+  scanf("%f", &amp;c); // wczytaj liczbę zmiennoprzecinkową
+  scanf("%d %d", &amp;a, &amp;b); // wczytaj dwie liczby całkowite rozdzielone spacją
+
+  printf("a=%d, b=%d, c=%f\n", a, b, c);
+  return 0;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Przykładowy program, który wczytuje liczby rozdzielone przecinkami zaprezentowany został poniżej.
+Wykorzystuje on wartość zwracaną przez <code>scanf</code> - liczbę wczytanych elementów:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+
+int main()
+{
+  int total = 0;
+
+  int n;
+
+  scanf("%d", &amp;n);
+  total += n;
+
+  while (scanf(",%d", &amp;n) == 1) {
+    total += n;
+  }
+
+  printf("Total: %d\n", total);
+
+  return 0;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Ostatnio zmodyfikowany 2025-03-10 17:33:39 +0100
+Ostatnio zmodyfikowany 2025-03-16 18:19:49 +0100
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
