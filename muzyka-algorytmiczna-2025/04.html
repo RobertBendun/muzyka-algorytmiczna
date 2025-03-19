@@ -115,7 +115,7 @@ n = note(:c4)
     # Powtarzaj w nieskończoność
     loop do
       # Wylosuj przesunięcie
-      d = rand(3)
+      d = rand(-12, 12)
       # Odtwórz dźwięk
       play (n + d), amp: 1 / 2.0
       sleep 1
