@@ -82,6 +82,55 @@
 			<li><strong><code>use_random_seed seed</code></strong> - ustawienie <code>seed</code> jako wartości od której zacząć generować liczby losowe</li>
 		</ul>
 
+		<h2 id="chord">Tworzenie losowego akordu</h2>
+
+<pre><code>akord = []
+
+# Akord ma 12 dźwięków
+12.times do
+	# Akord składa się z dźwięków od 60 do 72
+  akord.push(rrand_i(60, 72))
+end
+
+# Odtwarzamy akord
+play akord</code></pre>
+
+		<h2 id="slide">Płynne prejście z akordu na akord</h2>
+
+
+<pre><code>x = play [:c4, :e4, :g4], duration: 4, note_slide: 1
+sleep 1
+control x, notes: [:f4, :d4, :a4]</code></pre>
+
+
+		<h2 id="first">Rozwiązanie zadania 1</h2>
+
+<pre><code># Wylosuj dźwięk
+n = note(:c4)
+
+# Powtórz dwa razy
+2.times do
+  # Stwórz wątek
+  in_thread do
+    # Powtarzaj w nieskończoność
+    loop do
+      # Wylosuj przesunięcie
+      d = rand(3)
+      # Odtwórz dźwięk
+      play (n + d), amp: 1 / 2.0
+      sleep 1
+
+      # Zapisz przesunięcie
+      n += d
+
+      # Jeśli jest poza zakresem powróć do niego
+      if n &lt;= note(:c2) or n &gt;= note(:c6)
+        n = note(:c4)
+      end
+    end
+  end
+end</code></pre>
+
 
   </body>
 </html>
