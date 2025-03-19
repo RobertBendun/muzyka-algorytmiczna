@@ -453,6 +453,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_sekwencje_ucieczki_ang_escape_sequences">Sekwencje ucieczki (ang. escape sequences)</a></li>
 </ul>
 </li>
+<li><a href="#_unicode">Unicode</a>
+<ul class="sectlevel2">
+<li><a href="#_utf_8">UTF-8</a>
+<ul class="sectlevel3">
+<li><a href="#_uproszczone_sprawdzanie_długości_tekstu_utf_8">Uproszczone sprawdzanie długości tekstu UTF-8</a></li>
+<li><a href="#_opis_dokładny">Opis dokładny</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a href="#_argumenty_programu_w_c">Argumenty programu w C</a></li>
 <li><a href="#_obsługa_plików">Obsługa plików</a></li>
 </ul>
@@ -496,7 +506,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ol>
 </div>
 </li>
-<li>
 <li>
 <p><code>text.c</code>: przygotuj program, który przyjmuje podkomendę, a następnie ciąg znaków. W zależności od podkomendy:</p>
 <div class="olist loweralpha">
@@ -662,21 +671,152 @@ int main()
 </div>
 </div>
 <div class="sect1">
+<h2 id="_unicode">Unicode</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Standard określający liczbową wartość dla znaków z alfabetów świata.
+Jest rozszerzeniem standardu ASCII.</p>
+</div>
+<div class="sect2">
+<h3 id="_utf_8">UTF-8</h3>
+<div class="sect3">
+<h4 id="_uproszczone_sprawdzanie_długości_tekstu_utf_8">Uproszczone sprawdzanie długości tekstu UTF-8</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Wczytaj bajt (<code>uint8_t</code>)</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Zwiększ licznik o 1</p>
+</li>
+<li>
+<p>Jeśli bajt &lt;= 127 jest to znak ASCII zajmujący 1 bajt. Znak = bajt. Przejdź do kroku 1</p>
+</li>
+<li>
+<p>Jeśli bajt &lt;= 223 jest to znak Unicode zajmujący 2 bajty. Wczytaj kolejny bajt, sprawdź czy jest mniejszy od 191 i przejdź do kroku 1</p>
+</li>
+<li>
+<p>Jeśli bajt &lt;= 239 jest to znak Unicode zajmujący 3 bajty. Wczytaj 2 kolejne bajty, sprawdź czy oba są mniejsze od 191 i przejdź do kroku 1</p>
+</li>
+<li>
+<p>Wczytaj 3 kolejne bajty, sprawdź czy każdy z nich jest mniejszy od 191 i przejdź do kroku 1</p>
+</li>
+</ol>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Licznik = długość tekstu</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_opis_dokładny">Opis dokładny</h4>
+<div class="paragraph">
+<p>Konwencja: <code>10xxxxxxx</code> oznacza, że dwa bity początkowe mają wartość <code>10</code>, a kolejne mają wartość dowolną.</p>
+</div>
+<div class="paragraph">
+<p>Wczytaj bajt (<code>uint8_t</code>) i spróbuj przypasować go do jednego z wzorców pierwszego bajtu.
+Na podstawie wybranego wzorca wczytaj kolejne n kontynuacji, które odpowiada wspólnemu wzorcowi kontynuacji <code>10xxxxxxx</code>.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 66.6667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Wzorzec pierwszego bajtu</th>
+<th class="tableblock halign-left valign-top">Liczba kontynuacji</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0xxxxxxx</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">110xxxxx</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1110xxxx</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">11110xxx</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Znaki <code>x</code> oznaczają bity wartości znaku - zapisz je w jeden ciąg bitów by odczytać zapisany znak.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_argumenty_programu_w_c">Argumenty programu w C</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>Aby uzyskać dostęp do argumentów programu należy zdefiniować argumenty funkcji <code>main</code>.
+Zwyczajowe nazwy to <code>argc</code> odpowiadające liczbie argumentów oraz <code>argv</code> będące tablicą łańcuchów znaków.</p>
+</div>
+<div class="paragraph">
+<p>Program wypisujący przekazane argumenty:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
 
+int main(int argc, char **argv)
+{
+	for (int i = 0; i &lt; argc; ++i) {
+		printf("argv[%d] = %s\n", i, argv[i]);
+	}
+
+	return 0;
+}</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_obsługa_plików">Obsługa plików</h2>
 <div class="sectionbody">
-
+<div class="ulist">
+<ul>
+<li>
+<p><code>FILE *fopen(char const* filename, char const* mode);</code> - funkcja pozwalająca na otworzenie pliku. Zwraca NULL w przypadku błędu otwarcia pliku.</p>
+</li>
+<li>
+<p><code>int fclose(FILE *f);</code> - funkcja zamykająca plik</p>
+</li>
+<li>
+<p><code>fprintf</code> - odpowiednik printf, przyjmujący jako pierwszy argument dostęp do pliku, potem jak printf</p>
+</li>
+<li>
+<p><code>fscanf</code> - odpowiednik scanf, przyjmujący jako pierwszy argument dostęp do pliku, potem jak scanf</p>
+</li>
+<li>
+<p><code>fwrite</code> - funkcja pozwalająca na zapis do pliku</p>
+</li>
+<li>
+<p><code>fread</code> - funkcja pozwalająca na odczyt z pliku</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Należy pamiętać o manalnym zamknięciu!</p>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Ostatnio zmodyfikowany 2025-03-17 17:14:05 +0100
+Ostatnio zmodyfikowany 2025-03-17 19:27:55 +0100
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
