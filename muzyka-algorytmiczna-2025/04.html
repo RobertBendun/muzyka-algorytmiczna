@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Zajęcia 4 | Muzyka algorytmiczna</title>
+        <style>
+        html {
+            color-scheme: light dark;
+        }
+        body {
+            font-family: system-ui, sans-serif;
+            line-height: 1.6;
+            margin-inline: auto;
+            max-width: 80ch;
+        }
+        h2 {
+          border-top: 1px solid;
+          border-bottom: 1px solid;
+        }
+        dt {
+          font-weight: bold;
+        }
+				.warning {
+					border: 1px solid #ff000099;
+					background-color: #ff000030;
+					padding-inline: 1rem;
+					border-radius: 5px;
+				}
+        </style>
+  </head>
+  <body>
+    <header>
+      <a href="index.html">Muzyka algorytmiczna</a>
+    </header>
+    <h1>Zajęcia 4 (2025-03-19)</h1>
+
+    <ul>
+    </ul>
+
+    <h2 id="todo">Zadanie (na 2025-03-26)</h2>
+
+    <p>Przygotowanie krótkiego utworu (~1min) w środowisku Sonic Pi, spełniającego następujące wymagania:</p>
+    <ol>
+			<li>Utwór minimalistyczny (wg definicji z wykładu)</li>
+			<li>Wykorzystujący pseudolosowość (co najmniej jedna wylosowana liczba)</li>
+			<li>Wykorzystujący wielowątkowość (co najmniej dwa równolegle działające fragmenty programu)</li>
+    </ol>
+
+		<p><a target="_blank" href="https://teropa.info/blog/2017/01/23/terry-rileys-in-c.html">Terry Riley's "In C"</a> - artykuł anglojęzyczny stanowiący dobry wstęp do minimalizmu.</p>
+
+		<h2>Zadania na zajęciach</h2>
+
+		<ol>
+			<li>Stwórz utwór, realizujący następujący algorytm:
+        <ol style="list-style-type: lower-alpha">
+					<li>Wybierz dźwięk początkowy</li>
+					<li>Uruchom dwa wątki, każdy z nich losuje losowe przesunięcie dźwięku początkowego w zakresie od -12 do 12, odtwarza go i śpi 1 uderzenie.
+					Jeśli dźwięk jest poza zakresem od :c2 do :c6 powraca do dźwięku początkowego.</li>
+				</ol>
+			</li>
+
+      <li>Stwórz utwór o następującej strukturze:
+        <ol style="list-style-type: lower-alpha">
+          <li>Wylosuj 30 dźwięków o losowej wysokości od 200Hz do 400Hz. Tworzą one akord początkowy.</li>
+					<li>Odtwórz akord początkowy, stopniowo zwiększając jego głośność (pamiętaj by przed wykonaniem akordu zmienić dźwięki z Hz na MIDI przy pomocy funkcji <code>hz_to_midi</code>)</li>
+          <li>Powoli przejdź z akordu początkowego do następującego:
+            <code>(ring :d1, :d2, :a2, :d3, :a3, :d4, :a4, :d5, :a5, :d6, :fs6)</code>,
+          cały czas zwiększając głośność aż do osiągnięcia maksymalnej głośności (pełnej, 1.0)</li>
+        </ol>
+      </li>
+		</ol>
+
+		<h2 id="random">Generowanie liczb pseudolosowych</h2>
+		<p>Sonic Pi posiada wbudowany generator liczb pseudolosowych, którego stan początkowy jest taki sam przy każdym uruchomieniu.</p>
+
+		<ul>
+			<li><strong><code>rand n</code></strong> - losowa liczba zmiennoprzecinkowa od 0 do <code>n</code></li>
+			<li><strong><code>rand_i n</code></strong> - losowa liczba całkowita od 0 do <code>n</code> (bez <code>n</code>)</li>
+			<li><strong><code>rrand min, max</code></strong> - losowa liczba całkowita od <code>min</code> do <code>max</code></li>
+			<li><strong><code>rrand_i min, max</code></strong> - losowa liczba całkowita od <code>min</code> do <code>max</code> (bez <code>n</code>)</li>
+			<li><strong><code>use_random_seed seed</code></strong> - ustawienie <code>seed</code> jako wartości od której zacząć generować liczby losowe</li>
+		</ul>
+
+
+  </body>
+</html>
