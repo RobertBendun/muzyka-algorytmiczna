@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Zajęcia 5 | Muzyka algorytmiczna</title>
+        <style>
+        html {
+            color-scheme: light dark;
+        }
+        body {
+            font-family: system-ui, sans-serif;
+            line-height: 1.6;
+            margin-inline: auto;
+            max-width: 80ch;
+        }
+        h2 {
+          border-top: 1px solid;
+          border-bottom: 1px solid;
+        }
+        dt {
+          font-weight: bold;
+        }
+				.warning {
+					border: 1px solid #ff000099;
+					background-color: #ff000030;
+					padding-inline: 1rem;
+					border-radius: 5px;
+				}
+        @media (prefers-color-scheme: dark) {
+          img {
+            filter: invert(1);
+          }
+        }
+        </style>
+  </head>
+  <body>
+    <header>
+      <a href="index.html">Muzyka algorytmiczna</a>
+    </header>
+    <h1>Zajęcia 5 (2025-03-26)</h1>
+
+    <ul>
+    </ul>
+
+    <h2 id="todo">Zadanie (na 2025-04-02)</h2>
+
+		<p>Stwórz 3 różne programy tworzące różnie brzmiące dźwięki wykorzystaniem języka Pure Data,
+			spełniające następujące wymagania:</p>
+		<ol>
+			<li>Tworzony dźwięk nie wykracza poza zakres [-1, 1], niezależnie od ustawień wejść</li>
+			<li>Programy posiadają regulację głośności z wykorzystaniem suwaka</li>
+			<li>W ramach 3 stworzonych programów wykorzystywane są co najmniej dwa różne rodzaje syntezy (addytywna, subtraktywna, am, fm) i co najmniej dwa różne rodzaje fal (sinus, trójkątna, kwadratowa, piłokształtna)</li>
+			<li>Co najmniej jeden z programów wykorzystuje filtry</li>
+		</ol>
+
+		<h2>Konwencja notatek</h2>
+
+		<p><code>[f] &compfn; [g]</code> oznacza obiekt <code>[g]</code> z podłączonym pod nim obiektem <code>[f]</code> (od pierwszego wyjścia do pierwszego wejścia)</p>
+
+		<h2>Rodzaje fal</h2>
+
+		<img style="width: 100%;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Waveforms.svg/1024px-Waveforms.svg.png" alt="Waveforms">
+
+		<ul>
+			<li>Sinusoidalna: <code>[osc~]</code></li>
+			<li>Kwadratowa: <code>[expr~ abs($v1)] &compfn; [osc~]</code></li>
+			<li>Piłokształtna: <code>[expr~ 2*$v1-1] &compfn; [phasor~]</code></li>
+			<li>Trójkątna: <code>[expr~ 2*abs($v1)-1] &compfn; [expr~ 2*$v1-1] &compfn; [phasor~]</code></li>
+		</ul>
+
+		<a href="fale.pd">Przykład z falami z wykładu</a>
+
+		<h2>Rodzaje syntezy</h2>
+
+		<ul>
+			<li>Addytywna</li>
+			<li>Subtraktywna</li>
+			<li>Częstotliwości (FM)</li>
+			<li>Amplitudy (AM)</li>
+		</ul>
+
+		<h2>Filtry</h2>
+
+		<ul>
+			<li>Dolnoprzepustowy (Low pass filter)</li>
+			<li>Górnoprzepustowy (High pass filter)</li>
+			<li>Środkowoprzepustowy (Band pass filter)</li>
+		</ul>
+
+		<h2>Efekty</h2>
+
+		<ul>
+			<li>Odcięcie</li>
+			<li>Bitcrush</li>
+			<li>Reverb</li>
+			<li>Głoski - <a href="https://www.classes.cs.uchicago.edu/archive/1999/spring/CS295/Computing_Resources/Csound/CsManual3.48b1.HTML/Appendices/table3.html">wykaz częstotliwości które należy podać do [bp~]</a></li>
+		</ul>
+  </body>
+</html>
