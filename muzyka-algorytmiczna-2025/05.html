@@ -33,6 +33,8 @@
           }
         }
         </style>
+				<script src="p5.min.js"></script>
+				<script src="05.js"></script>
   </head>
   <body>
     <header>
@@ -53,6 +55,19 @@
 			<li>Wykorzystuje filtry</li>
 		</ol>
 
+		<h2>Podstawy Pure Data</h2>
+
+		<ul>
+			<li>Po instalacji Pure Data należy włączyć DSP (digital signal processing) oraz stworzyć nową kartę (File &gt; New)</li>
+			<li>Użytkownicy macOS: Command zamiast CTRL do skrótów klawiszowych</li>
+			<li>Aby dodać obiekt (kształt prostokąt) można użyć Edit &gt; Object lub CTRL+1</li>
+			<li>Aby dodać komunikat (kształt flagi) można użyć Edit &gt; Message lub CTRL+2</li>
+			<li>Aby zmodyfikować wartość slidera, obiektu liczbowego czy wysłać komunikat należy użyć CTRL + Lewy przycisk myszy</li>
+			<li>Obiekty z <code>~</code> przyjmują i/lub produkują wejście/wyjście sygnałowe (gruby przewód)</li>
+			<li>Komunikaty czy obiekty graficzne (jak slider, liczba) nie wysyłają same komunikatów!</li>
+			<li>Każdy obiekt posiada bogatą dokumentację (prawy przycisk myszy na obiekt &gt; Help), z interaktywnymi przykładami</li>
+		</ul>
+
 		<h2>Konwencja notatek</h2>
 
 		<p><code>[f] &compfn; [g]</code> oznacza obiekt <code>[g]</code> z podłączonym pod nim obiektem <code>[f]</code> (od pierwszego wyjścia do pierwszego wejścia)</p>
@@ -72,27 +87,61 @@
 
 		<h2>Rodzaje syntezy</h2>
 
-		<ul>
-			<li>Addytywna</li>
-			<li>Subtraktywna</li>
-			<li>Częstotliwości (FM)</li>
-			<li>Amplitudy (AM)</li>
-		</ul>
+		<h3>Addytywna</h3>
+
+		<canvas id="additive" style="width: 220px; height: 400px; float: left; clear: both; margin: 5px"></canvas>
+		<p>Tworzenie skomplikowanego sygnału przez sumowanie prostszych sygnałów.</p>
+		<p>W przykładzie zaprezentowano tworzenie dźwięku metodą syntezy addytywnej.
+		Obiekt <code>[mtof]</code> konwertuje wartość MIDI na wartość w Hz.
+		Następnie dana wartość jest mnożona przez wybrany współczynnik - mnożenie częstotliwości przez wartość <code>X</code> jest równoznaczne z przesunięciem o <code>X</code> oktaw.
+		Stworzony dźwięk jest dla sygnałów składowych dzielony w celu redukcji jego głośności - a tym samym udziału w końcowo sumowanym dźwięku przez obiekt <code>[+~]</code>.
+		Końcowo głośność ostatecznego dźwięku regulowana jest przez typowy układ kontrolujący głośność - należy zauważyć, że pomimo ograniczenia głośności dźwięków składowych suma nadal może być większa od 1!</p>
+
+
+		<div style="clear:both"></div>
+
+		<h3>Subtraktywna</h3>
+
+		<canvas id="subtractive" style="width: 220px; height: 300px; float: left; clear: both; margin: 5px"></canvas>
+
+		<p>Filtrowanie bogatego sygnału w celu osiągnięcia pożądanego efektu dźwiękowego.</p>
+		<p>W przykładzie zaprezentowano tworzenie dźwięku perkusyjnego z wykorzystaniem syntezy subtraktywnej.
+		Przy pomocy filtru Górnoprzepustowego <code>[hip~]</code> usuwane są niskie częstotliwości
+		Filtr jest zastosowany podwójnie by wzmocnić filtrację.
+		Następnie przy pomocy <code>[vline~]</code> tworzy prostą <a href="https://pl.wikipedia.org/wiki/Obwiednia_d%C5%BAwi%C4%99ku">obwiednię dźwięku</a> - natychmiastowy atak i 200 milisekundowy release.</p>
+
+		<div style="clear:both"></div>
+
+		<h3>Częstotliwości (FM)</h3>
+
+		<canvas id="fm" style="width: 220px; height: 340px; float: left; clear: both; margin: 5px"></canvas>
+
+		<p>Zmiana częstotliwości na tyle szybka, że przestajemy zauważać przejścia pomiędzy dźwiękami, a zaczynamy słyszeć bogaty dźwięk.</p>
+
+
+		<div style="clear:both"></div>
+
+		<h3>Amplitudy (AM)</h3>
+
+		<canvas id="am" style="width: 220px; height: 220px; float: left; clear: both; margin: 5px"></canvas>
+
+		<p>Zmiany głośności sygnału na tyle szybkie, że przestajemy zauważać jego zmiany, a zaczynamy słyszeć bogaty dźwięk.</p>
+
+		<div style="clear:both"></div>
 
 		<h2>Filtry</h2>
 
 		<ul>
-			<li>Dolnoprzepustowy (Low pass filter)</li>
-			<li>Górnoprzepustowy (High pass filter)</li>
-			<li>Środkowoprzepustowy (Band pass filter)</li>
+			<li>Dolnoprzepustowy (Low pass filter) - <code>[lop~]</code></li>
+			<li>Górnoprzepustowy (High pass filter) - <code>[hip~]</code></li>
+			<li>Środkowoprzepustowy (Band pass filter) - <code>[bp~]</code></li>
 		</ul>
 
 		<h2>Efekty</h2>
 
 		<ul>
-			<li>Odcięcie</li>
-			<li>Bitcrush</li>
-			<li>Reverb</li>
+			<li>Odcięcie - <code>[clip~]</code></li>
+			<li>Reverb - <code>[rev1~]</code></li>
 			<li>Głoski - <a href="https://www.classes.cs.uchicago.edu/archive/1999/spring/CS295/Computing_Resources/Csound/CsManual3.48b1.HTML/Appendices/table3.html">wykaz częstotliwości które należy podać do [bp~]</a></li>
 		</ul>
   </body>

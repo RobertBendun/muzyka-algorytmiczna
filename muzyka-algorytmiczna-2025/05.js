@@ -10,6 +10,24 @@ function pd(id, setup) {
 		const margin_top = 2;
 		const margin_left = 1;
 
+		class PDComment {
+			constructor({ msg, x, y }) {
+				to_draw.push(this);
+				this.msg = msg;
+				this.x = x;
+				this.y = y;
+			}
+
+			draw() {
+				p.noStroke();
+				p.fill('black');
+				p.textAlign(p.LEFT, p.TOP);
+				p.textStyle(p.BOLD);
+				p.text(this.msg, this.x, this.y + margin_top);
+				p.textStyle(p.NORMAL);
+			}
+		}
+
 		class PDObject {
 			constructor({ msg, x, y, inputs, outputs }) {
 				to_draw.push(this);
@@ -195,6 +213,14 @@ function pd(id, setup) {
 			}
 		}
 
+		class PDSignalWire extends PDControlWire {
+			draw() {
+				p.strokeWeight(2);
+				super.draw();
+				p.strokeWeight(1);
+			}
+		}
+
 		function* send(wire, time) {
 			const msg = wire.src.output[wire.si];
 
@@ -328,9 +354,11 @@ function pd(id, setup) {
 			} while (done_something);
 		}
 
-		let engine = {
+		const engine = {
 			to_draw,
-			PDControlWire, PDObject, PDMessage, PDNumber,
+			PDControlWire, PDSignalWire,
+			PDObject, PDMessage, PDNumber,
+			PDComment,
 			send, cycle, repeat, par, seq, on_click, wait, click, cycle_until_click,
 		};
 
@@ -354,7 +382,7 @@ function pd(id, setup) {
 				drawable.draw(p);
 			}
 			if (animation) {
-				const {_, done} = animation.next();
+				const {done} = animation.next();
 				if (done) {
 					animation = null;
 				}
@@ -363,133 +391,143 @@ function pd(id, setup) {
 	});
 }
 
-pd('#example01', ({
-	PDMessage, PDObject, PDNumber, PDControlWire,
-	seq, click, cycle, send, cycle_until_click
+pd('#additive', ({
+	PDComment, PDMessage, PDObject, PDNumber, PDControlWire, PDSignalWire,
+	seq
 }) => {
-  const lhs = new PDMessage({msg: "3", x: 50, y: 25});
-  const rhs = new PDMessage({msg: "4", x: 100, y: 25});
-  const mul = new PDObject({msg: "*", x: 50, y: 100, inputs: 2, outputs: 1});
-  const out = new PDNumber({msg: 0, x: 50, y: 150 });
+	new PDComment({msg: "Dźwięk MIDI", x: 75, y: 20});
+	new PDComment({msg: "Regulacja\ngłośności", x: 75, y: 300});
+	new PDComment({msg: "Głośniki", x: 75, y: 340 });
 
-  const w1 = new PDControlWire(lhs, 0, mul, 0);
-  const w2 = new PDControlWire(rhs, 0, mul, 1);
-  const w3 = new PDControlWire(mul, 0, out, 0);
+	const input = new PDNumber({msg: 60, x: 25, y: 20});
+	const mtof = new PDObject({msg: "mtof", x: 25, y: 70, inputs: 1, outputs: 1});
+	const sum = new PDObject({msg: "+~", x: 25, y: 260, inputs: 2, outputs: 1});
+	const amp = new PDObject({msg: "*~", x: 25, y: 300, inputs: 2, outputs: 1});
+	const dac = new PDObject({msg: "dac~", x: 25, y: 340, inputs: 2, outputs: 0});
+	const ampn = new PDNumber({msg: 0.5, x: 75, y: 260});
 
-	return cycle(() =>
-		seq(
-			cycle_until_click(lhs, () => seq(
-				click(rhs, 300),
-				send(w2, 1000),
-			)),
-			send(w1, 1000),
-			send(w3, 1000),
-		)
-  );
+	const itom  = new PDControlWire(input, 0, mtof, 0);
+	const stoa  = new PDSignalWire(sum, 0, amp, 0);
+	const atoa  = new PDControlWire(ampn, 0, amp, 1);
+	const atodl = new PDSignalWire(amp, 0, dac, 0);
+	const atodr = new PDSignalWire(amp, 0, dac, 1);
+
+
+	const mult = [];
+	const osc = [];
+	const div = [];
+
+	const hz_to_mult = [];
+	const mult_to_osc = [];
+	const osc_to_div = [];
+	const div_to_sum = [];
+
+	for (let i = 0; i < 4; ++i) {
+		const id = 2 * i + 1;
+		osc.push(new PDObject({msg: "osc~", x: 25 + i * 50, y: 160, inputs: 2, outputs: 1}));
+
+		if (id !== 1) {
+			mult.push(new PDObject({msg: `* ${id}`, x: 25 + i * 50, y: 120, inputs: 2, outputs: 1}));
+			hz_to_mult.push(new PDControlWire(mtof, 0, mult[mult.length-1], 0));
+		} else {
+			hz_to_mult.push(new PDControlWire(mtof, 0, osc[osc.length-1], 0));
+		}
+
+		if (id !== 1) {
+			div.push(new PDObject({msg: `/~ ${id}`, x: 25 + i * 50, y: 200, inputs: 2, outputs: 1}));
+			mult_to_osc.push(new PDControlWire(mult[mult.length-1], 0, osc[osc.length-1], 0));
+			osc_to_div.push(new PDSignalWire(osc[osc.length-1], 0, div[div.length-1], 0));
+			div_to_sum.push(new PDSignalWire(div[div.length-1], 0, sum, 0));
+		} else {
+			div_to_sum.push(new PDSignalWire(osc[osc.length-1], 0, sum, 0));
+		}
+	}
+
+	return seq();
 });
 
-pd('#example02', ({
-	PDMessage, PDObject, PDNumber, PDControlWire,
-	seq, click, cycle, send, cycle_until_click
+
+pd('#subtractive', ({
+	PDComment, PDMessage, PDObject, PDNumber, PDControlWire, PDSignalWire,
+	seq
 }) => {
-  const lhs = new PDMessage({msg: "3", x: 50, y: 25});
-  const rhs = new PDMessage({msg: "4", x: 100, y: 25});
-  const mul = new PDObject({msg: "*", x: 50, y: 100, inputs: 2, outputs: 1});
-  const out = new PDNumber({msg: 0, x: 50, y: 150 });
+	// new PDComment({msg:"Dźwięk wiatru", x: 25, y: 25});
+	// {
+	// 	const noise = new PDObject({msg: "noise~",   x: 25, y:  60, inputs: 1, outputs: 1})
+	// 	const lop1  = new PDObject({msg: "lop~ 300", x: 25, y: 100, inputs: 2, outputs: 1});
+	// 	const lop2  = new PDObject({msg: "lop~ 300", x: 25, y: 140, inputs: 2, outputs: 1});
+	// 	const dac = new PDObject({msg: "dac", x: 25, y: 180, inputs: 2, outputs: 0});
 
-  const w1 = new PDControlWire(lhs, 0, mul, 0);
-  const w2 = new PDControlWire(rhs, 0, mul, 1);
-  const w3 = new PDControlWire(mul, 0, out, 0);
+	// 	const ntol = new PDSignalWire(noise, 0, lop1, 0);
+	// 	const ltol = new PDSignalWire(lop1, 0, lop2, 0);
+	// 	const ltodl = new PDSignalWire(lop2, 0, dac, 0);
+	// 	const ltodr = new PDSignalWire(lop2, 0, dac, 1);
+	// }
 
-	return cycle(() =>
-		seq(
-			cycle_until_click(rhs, () => seq(
-				click(lhs, 300),
-				send(w1, 1000),
-				send(w3, 1000),
-			)),
-			send(w2, 1000),
-		)
-  );
+	new PDComment({msg:"Dźwięki perkusyjne", x: 25, y: 20});
+	const noise = new PDObject({msg: "noise~", x: 25, y: 60, inputs: 1, outputs: 1});
+	const hip1 = new PDObject({msg: "hip~ 1000", x: 25, y: 100, inputs: 2, outputs: 1});
+	const hip2 = new PDObject({msg: "hip~ 1000", x: 25, y: 140, inputs: 2, outputs: 1});
+	const amp = new PDObject({msg: "*~", x: 25, y: 200, inputs: 2, outputs: 1});
+	const vline = new PDObject({msg: "vline~", x: 100, y: 180, inputs: 3, outputs: 1});
+	const dac = new PDObject({msg: "dac~", x: 25, y: 240, inputs: 2, outputs: 0});
+	const msg = new PDMessage({msg: "1, 0 200", x: 130, y: 140, inputs: 1, outputs: 1});
+
+	new PDSignalWire(noise, 0, hip1, 0);
+	new PDSignalWire(hip1, 0, hip2, 0);
+	new PDSignalWire(hip2, 0, amp, 0);
+	new PDSignalWire(amp, 0, dac, 0);
+	new PDSignalWire(amp, 0, dac, 1);
+	new PDSignalWire(vline, 0, amp, 1);
+	new PDControlWire(msg, 0, vline, 0);
+
+	return seq();
 });
 
-pd('#example03', ({
-	PDMessage, PDObject, PDNumber, PDControlWire,
-	seq, on_click, cycle, send
-}) => {
-  const lhs  = new PDMessage({msg: "3", x: 50, y: 25});
-  const rhs  = new PDMessage({msg: "4", x: 100, y: 75});
-  const mul  = new PDObject({msg: "*", x: 50, y: 125, inputs: 2, outputs: 1});
-  const out  = new PDNumber({msg: 0, x: 50, y: 175 });
-  const pipe = new PDObject({msg:"pipe", x: 50, y: 75, inputs: 1, outputs: 1});
+pd("#fm", ({seq, PDNumber, PDObject, PDComment, PDSignalWire, PDControlWire}) => {
+	const base = new PDNumber({msg: 100, x: 25, y: 20});
+	const mod = new PDObject({msg: "osc~", x: 25, y: 60, inputs: 2, outputs: 1});
+	const m24 = new PDObject({msg: "*~ 24", x: 25, y: 100, inputs: 2, outputs: 1});
+	const p60 = new PDObject({msg: "+~ 60", x: 25, y: 140, inputs: 2, outputs: 1});
+	const mtof = new PDObject({msg: "mtof~", x: 25, y: 180, inputs: 1, outputs: 1});
+	const car = new PDObject({msg: "osc~", x: 25, y: 220, inputs: 2, outputs: 1});
+	const amp = new PDObject({msg: "* 0.2", x: 25, y: 260, inputs: 2, outputs: 1});
+	const dac = new PDObject({msg: "dac~", x: 25, y: 300, inputs: 2, outputs: 0});
 
-  const w_lhs1 = new PDControlWire(lhs, 0, pipe, 0);
-  const w_pipe = new PDControlWire(pipe, 0, mul, 0);
-  const w_lhs2 = new PDControlWire(lhs, 0, rhs, 0);
-  const w_rhs  = new PDControlWire(rhs, 0, mul, 1);
-  const w_res  = new PDControlWire(mul, 0, out, 0);
+	new PDComment({msg: "Modulator", x: 75, y: mod.y});
+	new PDComment({msg: "Zakres 2 oktaw", x: 75, y: m24.y});
+	new PDComment({msg: "Zaczynamy od :c4", x: 75, y: p60.y});
+	new PDComment({msg: "Konwersja do MIDI", x: 75, y: mtof.y});
+	new PDComment({msg: "Carrier", x: 75, y: car.y});
 
-  return seq(
-		on_click(lhs),
-		cycle(() => seq(
-			send(w_lhs1, 1000),
-			send(w_lhs2, 1000),
-			send(w_rhs, 1000),
-			send(w_pipe, 1000),
-			send(w_res, 1000),
-			on_click(lhs),
-		)),
-  )
+	new PDControlWire(base, 0, mod, 0);
+	new PDSignalWire(mod, 0, m24, 0);
+	new PDSignalWire(m24, 0, p60, 0);
+	new PDSignalWire(p60, 0, mtof, 0);
+	new PDSignalWire(mtof, 0, car, 0);
+	new PDSignalWire(car, 0, amp, 0);
+	new PDSignalWire(amp, 0, dac, 0);
+	new PDSignalWire(amp, 0, dac, 1);
+
+	return seq();
 });
 
-pd('#example04', ({
-	PDMessage, PDObject, PDNumber, PDControlWire,
-	seq, on_click, send, cycle
-}) => {
-  const lhs   = new PDMessage({msg: "3", x: 50, y: 125});
-  const rhs   = new PDMessage({msg: "4", x: 100, y: 25});
-  const mul   = new PDObject({msg: "*", x: 75, y: 175, inputs: 2, outputs: 1});
-  const out   = new PDNumber({msg: 0, x: 75, y: 225 });
-  const delay = new PDObject({msg:"delay", x: 50, y: 75, inputs: 1, outputs: 1});
+pd("#am", ({seq, PDNumber, PDObject, PDComment, PDSignalWire, PDControlWire}) => {
+	const hz = new PDNumber({msg: 100, x: 25, y: 20});
+	const base = new PDObject({msg: "osc~", x: 25, y: 60, inputs: 2, outputs: 1});
+	const ampm = new PDObject({msg: "*~", x: 25, y: 100, inputs: 2, outputs: 1});
+	const ampn = new PDNumber({msg: 100, x: 75, y: 20, inputs: 2, outputs: 1});
+	const ampo = new PDObject({msg: "osc~", x: 75, y: 60, inputs: 2, outputs: 1});
+	const amp = new PDObject({msg: "*~ 0.2", x: 25, y: 140, inputs: 2, outputs: 1});
+	const dac = new PDObject({msg: "dac~", x: 25, y: 180, inputs: 2, outputs: 0});
 
-  const w1 = new PDControlWire(rhs, 0, delay, 0);
-  const w2 = new PDControlWire(delay, 0, lhs, 0);
-  const w3 = new PDControlWire(lhs, 0, mul, 0);
-  const w4 = new PDControlWire(rhs, 0, mul, 1);
-  const w5 = new PDControlWire(mul, 0, out, 0);
+	new PDControlWire(hz, 0, base, 0);
+	new PDControlWire(ampn, 0, ampo, 0);
+	new PDSignalWire(base, 0, ampm, 0);
+	new PDSignalWire(ampo, 0, ampm, 1);
+	new PDSignalWire(ampm, 0, amp, 0);
+	new PDSignalWire(amp, 0, dac, 0);
+	new PDSignalWire(amp, 0, dac, 1);
 
-  return seq(
-    on_click(rhs),
-		cycle(() => seq(
-			send(w1, 1000),
-			send(w4, 1000),
-			send(w2, 1000),
-			send(w3, 1000),
-			send(w5, 1000),
-			on_click(rhs),
-		)),
-  );
-});
-
-pd('#example05', ({
-	PDMessage, PDObject, PDNumber, PDControlWire,
-	seq, on_click, send, cycle, wait
-}) => {
-  const bang = new PDMessage({msg: "bang", x: 25, y: 25});
-	const f = new PDObject({msg: "f", x: 25, y: 75, inputs: 2, outputs: 1 });
-	const inc = new PDObject({msg: "+ 1", x: 125, y: 75, inputs: 2, outputs: 1 });
-	const res = new PDNumber({msg: "0", x: 25, y: 125});
-
-	const w1 = new PDControlWire(bang, 0, f, 0);
-	const w2 = new PDControlWire(f, 0, inc, 0);
-	const w3 = new PDControlWire(inc, 0, f, 1);
-	const w4 = new PDControlWire(f, 0, res, 0);
-
-  return cycle(() => seq(
-		on_click(bang),
-		send(w1, 1000),
-		send(w4, 1500),
-		send(w2, 1500),
-		send(w3, 1000),
-	));
+	return seq();
 });
