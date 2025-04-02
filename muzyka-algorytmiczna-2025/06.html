@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Zajęcia 6 | Muzyka algorytmiczna</title>
+        <style>
+        html {
+            color-scheme: light dark;
+        }
+        body {
+            font-family: system-ui, sans-serif;
+            line-height: 1.6;
+            margin-inline: auto;
+            max-width: 80ch;
+        }
+        h2 {
+          border-top: 1px solid;
+          border-bottom: 1px solid;
+        }
+        dt {
+          font-weight: bold;
+        }
+        .warning {
+          border: 1px solid #ff000099;
+          background-color: #ff000030;
+          padding-inline: 1rem;
+          border-radius: 5px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+          img {
+            filter: invert(1);
+          }
+        }
+        </style>
+  </head>
+  <body>
+    <header>
+      <a href="index.html">Muzyka algorytmiczna</a>
+    </header>
+    <h1>Zajęcia 6 (2025-04-02)</h1>
+
+    <ul>
+      <li><a href="#goal">Cel zajęć</a></li>
+      <li><a href="#todo">Zadanie</a></li>
+      <li><a href="#code">Zrzut kodu z zajęć</a></li>
+    </ul>
+
+    <h2 id="goal">Cel zajęć</h2>
+    <ol>
+      <li>MIDI w Sonic Pi</li>
+      <li>Łączenie Sonic Pi z zewnętrznymi syntezatorami</li>
+    </ol>
+
+    <h2 id="todo">Zadanie</h2>
+
+    <h3>Na kolejne zajęcia (2025-04-09)</h3>
+
+    <p>Przygotowanie krótkiego utworu (~1min) w środowisku Sonic Pi, spełniającego jeden z następujących wariantów wymagań:</p>
+
+
+
+    <ol type="a">
+			<li>Utwór będący reinterpretacją serializmu</li>
+			<li>Wygenerowanie utworu serialistycznego (generowanie np. dźwięków w serii, kolejności wykonania serii i ich wariantów</li>
+    </ol>
+
+    <h2>Funkcje</h2>
+
+    <div class="warning">
+      <p>Sonic Pi zbudowany jest na podstawie języka Ruby, przez co jego mechanizm tworzenia funkcji (deklaracja <code>def</code>) działa w wykorzystywanej wersji.
+      Twórca zaznaczył jednak, że nie rekomenduje wykorzystywanie mechanizmów z języka Ruby.</p>
+    </div>
+
+<pre><code>define :getRandomNumber do
+  4 # chosen by fair dice roll
+    # guaranteed to be random
+end
+
+print(getRandomNumber())
+print getRandomNumber
+
+define :add do |a, b|
+  a + b
+end
+
+print(add(11, 22))
+
+
+define :fib do |n|
+  if n &lt;= 1 then
+    return 1
+  else
+    return n * fib(n-1)
+  end
+end
+
+print(fib(8))</pre></code>
+
+<h3>Dynamiczna zmiana definicji funkcji</h3>
+
+<pre><code>define :test do |x|
+  x
+end
+
+live_loop :foo do
+  play test(60)
+  sleep 1
+end
+
+live_loop :bar do
+  f = tick
+  define :test do |x|
+    x + f
+  end
+  sleep 2
+end</code></pre>
+
+    <h2>Serializm</h2>
+
+    <ol>
+      <li>Wyznacz serię - interwałów, rytmów, itp.</li>
+      <li>Stosuj serię oraz jej przekształcenia do kompozycji utworu</li>
+    </ol>
+
+    <h3>Przykład z wykładu</h3>
+<pre><code>ns = [:fs3, :cs3, :e3, :g3, :c3, :d3, :gs3,:b3, :a3, :ds3, :as3, :f3]
+rytm = [1, 1/2r, 2, 1/4r, 3/4r, 1/8r, 4, 3/8r, 3/2r, 3, 1/16r, 6]
+dyna = [0.33, 0.45, 0.27, 0.55, 0.1, 0.2, 0.7, 0.91, 0.82, 0.51, 0.4, 0.37]
+
+for i in 0..12
+  play ns[i], amp: dyna[i], duration: rytm[i]
+  sleep rytm[i].to_f
+end</code></pre>
+
+    <h3>Seria interwałów</h3>
+
+    <p>Seria składająca się z odległości pomiędzy dźwiękami (w półtonach).
+    Transformacje zachowują relatywne odległości między kolejnymi dźwiękami.
+    Pozwala to na wyznaczenie czterech możliwych serii na podstawie trzech przekształceń.</p>
+
+    <p>Podstawowe przekształcenia to:</p>
+    <ul>
+      <li><strong>Prima</strong> - brak przekształcenia (funkcja tożsamościowa)</li>
+      <li><strong>Inwersja</strong> - odwrócenie kierunku interwałów</li>
+      <li><strong>Rak</strong> - wykonywanie interwałów od końca</li>
+    </ul>
+
+    <p>Wyznacza to 4 serie:</p>
+    <ul>
+      <li><strong>P - Prima</strong> (wybrane interwały)
+        <pre>0, 11, 3, 4, 8, 7, 9, 5, 6, 1, 2, 10</pre></li>
+
+      <li><strong>I - Inwersja</strong> (12 - dźwięk)
+        <pre>2, 10, 11, 6, 7, 3, 5, 4, 8, 9, 1, 0</pre></li>
+
+      <li><strong>R - Rak</strong> (od końca)
+        <pre>10, 2, 1, 6, 5, 9, 7, 8, 4, 3, 11, 0</pre></li>
+
+      <li><strong>RI - Rak Inwersji</strong> (najpierw inwersja, potem rak)
+        <pre>2, 10, 11, 6, 7, 3, 5, 4, 8, 9, 1, 0</pre></li>
+    </ul>
+
+    <img style="width: 100%" src="https://upload.wikimedia.org/score/j/3/j3nxlf99xtekv2ii9eksl44x36ua7mu/j3nxlf99.png" alt="">
+
+    <p>Operacje P, I, R, RI wraz z złożeniem funkcji jako działaniem tworzą grupę abelową
+    znaną jako <a target="_blank" href="https://pl.wikipedia.org/wiki/Grupa_czw%C3%B3rkowa_Kleina">Grupa Czwórkowa Kleina</a>,
+    gdzie P jest elementem neutralnym.</p>
+
+		<h4>Implementacja</h4>
+
+<p>Inwersja w której możemy wyjść poza oryginalną serię:</p>
+
+<pre><code>define :inwersja do |seq|
+  xs = [seq[0]]
+  for i in 1...12 do
+    xs[i] = xs[i-1] + (seq[i-1] - seq[i])
+  end
+  xs.ring
+end</code></pre>
+
+<p>Inwersja w której pozostajemy w serii:</p>
+
+<pre><code>define :inwersja_mod do |seq|
+  inw = inwersja(seq)
+  inw.flat_map do |x|
+    (x - inw.min) % 12 + inw.min
+  end
+end</code></pre>
+
+<p>Rak i rak inwersji:</p>
+
+<pre><code>define :rak do |seq|
+  seq.reverse
+end
+
+define :rak_inwersji do |seq|
+  rak(inwersja(seq))
+end</code></pre>
+  </body>
+</html>
+
