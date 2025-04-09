@@ -198,6 +198,39 @@ end
 define :rak_inwersji do |seq|
   rak(inwersja(seq))
 end</code></pre>
+
+<h2>Kod z zajęć</h2>
+
+<pre><code># 1. Definicja funkcji silnia
+# 2. Stworzenie tablicy a 12 elementowej, takiej, że
+#      a[i] = i! % 12
+# 3. Stworzenie tablicy b 12 elementowej, takiej, że
+#      b[i] = i! % 12 + b[i-1]
+# 4. Odsłuchanie tablic a i b
+
+define :silnia do |n|
+  if n == 0 then
+    return 1
+  end
+  n * silnia(n-1)
+end
+
+a = []
+12.times do |i|
+  a.push(silnia(i) % 41)
+end
+
+b = [note(:c4) + silnia(0)]
+for i in 1..11
+  b[i] = b[i-1] + silnia(i) % 41
+end
+
+use_synth :saw
+
+for i in 0..11
+  play b[i], duration: 41.0 / a[i]
+  sleep 41.0 / b[i]
+end</code></pre>
   </body>
 </html>
 
