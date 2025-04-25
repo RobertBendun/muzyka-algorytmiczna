@@ -45,6 +45,154 @@
 			<li>Harmonia</li>
 			<li>Skonstruowanie własnego materiału harmonicznego</li>
 		</ul>
+
+		<p>Przykłady do tego tematu zawierają konstrukcję utworów w oparciu o losowość;
+		zadanie domowe nie powinno się jednak o nią opierać - wybór akordów do danych dźwięków powinien być możliwie świadomy i celowy.</p>
+
+		<h2>tl;dr</h2>
+
+		<ul>
+			<li><a href="https://en.wikipedia.org/wiki/Chord_progression">Chord progression (Wikipedia)</a></li>
+			<li>Funkcja <a href="sonic.html#scale"><code>scale</code></a></li>
+			<li>Funkcja <a href="sonic.html#chord"><code>chord</code></a></li>
+			<li>Funkcja <a href="sonic.html#chord_degree"><code>chord_degree</code></a></li>
+			<li>Funkcja <a href="sonic.html#chord_invert"><code>chord_invert</code></a></li>
+		</ul>
+
+		<h2>Konsonanse, dysonanse, akordy, harmonia</h2>
+
+		<p>Czyli wstęp laika do teorii muzyki:</p>
+
+		<h3>Skale</h3>
+
+		<p>Kompozycję (w kontekście harmonii) rozpoczynamy od wyboru <a href="https://pl.wikipedia.org/wiki/Skala_(muzyka)">skali</a> - podzbioru dostępnych nam dźwięków, na którym będziemy potem operować.
+		Pierwszy dźwięk skali nazywany jest <a href="https://pl.wikipedia.org/wiki/Tonika">toniką</a> (teoretycznie wyłącznie w <a href="https://pl.wikipedia.org/wiki/Skala_diatoniczna">skalach diatonicznych</a> - dur i moll; Sonic Pi używa częściej).
+			Skala zawiera dźwięki od pierwszego jej dźwięku do oktawy (dźwięku 12 półtonów wyżej).</p>
+
+		<p>Sonic Pi posiada duży zbiór wbudowanych skal. Lista skal dostępna jest poprzez funkcję <code>scale_names</code>.
+
+		<p>Przykładowy program prezentujący skalę C-dur:</p>
+
+		<pre><code>play_pattern_timed scale(:c4, :major), 1</code></pre>
+
+		<p>Przykładowy program prezentujący losowanie skali, a następnie odtworzenie jej dźwięków:</p>
+
+		<pre><code>scale_name = scale_names.choose
+sc = scale(:c4, scale_name)
+play_pattern_timed sc, 1</code></pre>
+
+		<p>Skala to wyłącznie predefiniowane interwały kończące się na oktawie.
+		Gama to „wdrożenie” skali od początkowego dźwięku.
+		Mówimy np. o skali durowej, a gdy zaczyna się od konkretnego dźwięku (np. C) jest to gama C-dur.
+
+		<p>Muzyka opisana z użyciem opisanych powyżej narzędzi jest tzw. <a href="https://pl.wikipedia.org/wiki/Tonalno%C5%9B%C4%87">muzyką tonalną</a> - odchodząc od tych zasad i traktując dźwięki równoważnie, a ich połączenia dowolnie tworzymy <a href="https://pl.wikipedia.org/wiki/Atonalno%C5%9B%C4%87">muzykę atonalną</a>.</p>
+
+		<h3>Akordy</h3>
+
+		<p>Różne interwały mogą współbrzmieć zgodnie (<a href="https://pl.wikipedia.org/wiki/Konsonans">konsonansowo</a>) lub rozbieżnie (<a href="https://pl.wikipedia.org/wiki/Dysonans">dysonansowo</a>).
+		Dotyczy to zarówno interwałów pomiędzy następującymi po sobie dźwiękami, jak i dźwiękami współbrzmiącymi (akordami).
+		Dobór dźwięków w akordzie uzależniony jest od tego czy chcemy mieć konsonansowy czy dysonansowy efekt.</p>
+
+		<p>Akordy tworzymy zazwyczaj w wybranej przez nas skali, korzystając z predefiniowanych wzorców.
+		Podstawowym typem akordu jest <a href="https://pl.wikipedia.org/wiki/Tr%C3%B3jd%C5%BAwi%C4%99k">trójdźwięk</a>, który składa się z primy (dźwięku pierwszego, od którego jest nazwa akordu), tercji (3 stopień skali) i kwinty (5 stopień skali).</p>
+
+
+<p>Automatyczne stworzenie trójdźwięku w skali durowej, gdzie pryma to <code>:c4</code>:</p>
+		<pre><code># Stopnie:                    1   2   3   4   5   6   7   8
+print scale(:c4, :major) #= [60, 62, 64, 65, 67, 69, 71, 72]
+print chord(:c4, :major) #= [60,     64,     67]
+		</code></pre>
+
+
+		<p>Akordy mogą budować, utrzymywać lub rozwiązywać napięcie.
+		Wyróżnia się zazwyczaj trzy główne akordy, każdy rozpoczynający się od innego stopnia skali.
+		Stopnie skali oznaczane są liczbami rzymskimi; podobnie akordy, których pryma jest n-tym stopniem skali oznaczony jest n-tą liczbą rzymską.</p>
+
+<pre><code>
+play chord_degree(:i,  :c4, :major, 3) #= odegra [60.0, 64.0, 67.0] - C-dur, tonika
+play chord_degree(:iv, :c4, :major, 3) #= odegra [65.0, 69.0, 72.0] - F-dur, subdominanta
+play chord_degree(:v,  :c4, :major, 3) #= odegra [67.0, 71.0, 74.0] - G-dur, dominanta
+</code></pre>
+
+	<p>(W dużym uproszczeniu) Tonika rozwiązuje napięcie, subdominanta buduje, dominanta jest kulminacją.
+	Akord dobieramy zarówno na podstawie tego jakie dźwięk ze skali występuje aktualnie w melodii lub na podstawie tego czy chcemy budować lub rozładowywać napięcie; wprowadzać więcje konsonansów czy dysonansów.</p>
+
+	<p>Możemy też wykorzystać <a href="https://en.wikipedia.org/wiki/Chord_progression">predefiniowane progresje akordów.</a></p>
+
+	<h2>Przykłady automatycznej harmonizacji (kod z zajęć)</h2>
+
+	<p>Dodanie ścieżki basowej na podstawie aktualnie odtwarzanego losowego dźwięku.
+	Należy zwrócić uwagę na konieczność synchronizacji - bez <code>cue</code> i <code>sync</code> bass i melodia mogą mieć różne wartości <code>get[:n]</code></p>
+
+<pre><code>use_synth :dsaw
+
+live_loop :bass do
+  cue :bass_ready
+  sync :ready
+  play chord(get[:n] - 24, :major), amp: 0.5
+end
+
+sync :bass_ready
+
+live_loop :melodia do
+  set :n, scale(:c5, :major).choose
+  play get[:n], amp: 0.5
+  cue :ready
+  sleep 1
+end</code></pre>
+
+<p>Odtwarzanie takiego akordu, który zawiera w sobie dwa z wylosowanych dźwięków. Skala jest losowana.</p>
+
+<pre><code>s = scale_names.choose
+use_synth :dsaw
+
+live_loop :bass do
+  sync :ready
+
+  for i in 1..7
+    x = chord_degree(i, :c4, s)
+    if x.index get[:n1] and x.index get[:n2]
+      play x - 12, duration: 2, amp: 0.5
+      break
+    end
+  end
+end
+
+live_loop :melodia do
+  set :n1, scale(:c4, s).choose
+  set :n2, scale(:c4, s).choose
+  cue :ready
+
+  play get[:n1]
+  sleep 1
+  play get[:n2]
+  sleep 1
+end</code></pre>
+
+<p>Należy zwrócić uwagę na to, że można wylosować takie pary dźwięków, które nie mają odpowiadającego im akordu w pętli bass!</p>
+
+
+<p>Przykład zastosowania progresji:</p>
+
+<pre><code>use_synth :dsaw
+
+live_loop :bass do
+  cue :bass_ready
+  sync :ready
+  play chord_degree((ring :i, :v, :vi, :iv).tick, :c3, :major), amp: 0.5
+end
+
+sync :bass_ready
+
+live_loop :melodia do
+  set :n, scale(:c5, :major).choose
+  play get[:n], amp: 0.25, duration: 0.5
+  cue :ready
+  sleep 0.5
+  play scale(:c5, :major).choose, amp: 0.25, duration: 0.5
+  sleep 0.5
+end</code></pre>
+
   </body>
 </html>
 
