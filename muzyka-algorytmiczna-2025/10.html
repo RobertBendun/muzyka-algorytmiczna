@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Zajęcia 10 | Muzyka algorytmiczna</title>
+        <style>
+        html {
+            color-scheme: light dark;
+        }
+        body {
+            font-family: system-ui, sans-serif;
+            line-height: 1.6;
+            margin-inline: auto;
+            max-width: 80ch;
+        }
+        h2 {
+          border-top: 1px solid;
+          border-bottom: 1px solid;
+        }
+        dt {
+          font-weight: bold;
+        }
+        .warning {
+          border: 1px solid #ff000099;
+          background-color: #ff000030;
+          padding-inline: 1rem;
+          border-radius: 5px;
+        }
+        </style>
+  </head>
+  <body>
+    <header>
+      <a href="index.html">Muzyka algorytmiczna</a>
+    </header>
+    <h1>Zajęcia 10 (2025-04-30)</h1>
+
+    <h2 id="todo">Zadanie</h2>
+
+    <h3>Na kolejne zajęcia (2025-05-07)</h3>
+
+    <p>Przygotowanie krótkiego utworu (~1min) w środowisku Sonic Pi, spełniającego następujące wymagania:</p>
+
+    <ul>
+      <li>Komunikację MIDI - Sonic Pi jako nadawca, kilka instancji Helma (lub innych programów) jako odbiorcy;
+        Sonic PI jako odbiorca, plik MIDI jako nadawca (można użyć gotowego pliku MIDI)</li>
+      <li><strong>Nie wykorzystujemy wbudowanych dźwięków Sonic PI!</strong></li>
+      <li>(Opcjonalnie) Komunikacja OSC: Sonic Pi - Python (lub inne)</li>
+    </ul>
+
+
+    <h2>MIDI</h2>
+
+		<p>Za tworzenie i wysyłanie komunikatów MIDI odpowiada rodzina funkcji <code>midi*</code>.
+		Każda z nich akceptuje parametr <code>port:</code>, który pozwala na wybranie docelowego portu.
+		Domyślną wartością jest <code>*</code> wysyłająca na wszystkie porty.</p>
+
+		<ul>
+			<li><strong>midi</strong> - odpowiednik play/synth dla MIDI, np. <code>midi :c4</code>.
+				Przyjmuje dodatkowe parametry <code>vel</code> odpowiadające za „siłę uderzenia w klawisz” (0-127) oraz <code>sustain</code> określające długość wciśnięcia klawisza.</li>
+			<li><strong>midi_note_on</strong> - wciśnięcie klawisza, akceptuje <code>vel</code></li>
+			<li><strong>midi_note_off</strong> - zwolnienie klawisza (równoważne <code>midi_note_on vel: 0</code></li>
+			<li><strong>midi_all_notes_off</strong> - zwolnienie jakichkolwiek wciśniętych klawiszy</li>
+			<li><strong>midi_pc</strong> - zmiana instrumentu</li>
+		</ul>
+
+<pre><code>10.times do |i|
+  midi :c4, vel: i * 10, sustain: 1
+  sleep 1
+end</code></pre>
+
+<pre><code>use_real_time
+
+in_thread do
+  use_midi_defaults port: "timidity_timidity_port_0_136_0"
+  midi_pc 24 # AcousticGuitarNylon
+
+  loop do
+    midi scale(:c4, :major).tick
+    sleep 1
+  end
+end
+
+in_thread do
+  use_midi_defaults port: "timidity_timidity_port_1_136_1"
+  midi_pc 19 # Church Organ
+  loop do
+    midi scale(:c2, :major).tick
+    sleep 4
+  end
+end</pre></code>
+
+    <h3>Przykładowy program rozbijający kanały MIDI na osobne porty</h3>
+
+<pre><code>midi_all_notes_off
+
+input = "midi_through_midi_through_port-0_14_0"
+out1 = "midi_through_midi_through_port-1_14_1"
+out2 = "midi_through_midi_through_port-2_14_2"
+out3 = "midi_through_midi_through_port-3_14_3"
+
+live_loop :chan1 do
+  use_real_time
+  n, vel = sync "/midi:#{input}:1/note_on"
+  midi_note_on n, vel, port: out1
+end
+
+live_loop :chan2 do
+  use_real_time
+  n, vel = sync "/midi:#{input}:2/note_on"
+  midi_note_on n, vel, port: out2
+end
+
+live_loop :chan3 do
+  use_real_time
+  n, vel = sync "/midi:#{input}:3/note_on"
+  midi_note_on n, vel, port: out3
+end</code></pre>
+
+    <h3>Przykładowy program odbierający komunikaty MIDI</h3>
+
+<pre><code>port = "midi_through_midi_through_port-0_14_0"
+
+synths = Hash.new
+
+define :release do |s|
+  in_thread do
+    control s, amp: 0, amp_slide: 0.1
+    sleep 0.2
+    s.kill
+  end
+end
+
+
+live_loop :receive do
+  use_real_time
+  n, v = sync "/midi:#{port}:*/note_on"
+  if v == 0 then
+    if synths[n]
+      release synths[n]
+      synths[n] = nil
+    end
+  else
+    if synths[n]
+      release synths[n]
+      synths[n] = nil
+    end
+    synths[n] = synth :tech_saws, note: n, sustain: 99999, amp: 0.3
+  end
+end</code></pre>
+
+
+    <h2>OSC (Open Sound Control)</h2>
+
+<div class="warning">
+	<p>W trakcie zajęć 2024-10-30 znaleziono kilka problematycznych zachowań Sonic Pi w ramach komunikacji OSC.
+	Komunikaty nie były zawsze przesyłane pomiędzy komputerami, na niektórych udawało się wyłącznie nadawać, na innych wyłącznie odbierać.
+	Wykorzystywanie OSC uznawane jest przez to jako eksperymentalne.</p>
+</div>
+
+
+		<h3>Podstawowa komunikacja</h3>
+
+		<p>Komunikaty OSC odbierane są poprzez funkcję <code>sync</code>; wysyłane poprzez funkcje <code>osc</code>, <code>osc_send</code>.
+
+		<ul>
+			<li>Wyślij do 150.254.65.170 na ścieżkę <code>/path</code>: <code>osc_send "150.254.65.170", 4560, "/path"</code></li>
+			<li>Odbierz od dowolnego nadawcy ścieżkę <code>/path</code>: <code>sync "/osc*/path"</code></li>
+			<li>Odbierz od nadawcy 150.254.65.170: <code>sync "/osc:150.254.65.170:*/path"</code></li>
+			<li>Odbierz od nadawcy 150.254.65.170, port 8888: <code>sync "/osc:150.254.65.170:8888/path"</code></li>
+			<li>Wyślij dźwięk :c4 do 150.254.65.170: <code>osc_send "150.254.65.170", 4560, "/path", :c4</code></li>
+		</ul>
+
+
+    <h3>Lokalna komunikacja MIDI</h3>
+
+<pre><code>use_real_time
+
+live_loop :receiver do
+  n = sync "/osc:*:4560/note"
+  play n
+end
+
+live_loop :sender do
+  osc_send "localhost", 4560, "/note", :c4
+  print "send"
+  sleep 1
+end</code></pre>
+
+  </body>
+</html>
+
