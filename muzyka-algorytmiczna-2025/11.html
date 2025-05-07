@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Zajęcia 11 | Muzyka algorytmiczna</title>
+        <style>
+        html {
+            color-scheme: light dark;
+        }
+        body {
+            font-family: system-ui, sans-serif;
+            line-height: 1.6;
+            margin-inline: auto;
+            max-width: 80ch;
+        }
+        h2 {
+          border-top: 1px solid;
+          border-bottom: 1px solid;
+        }
+        dt {
+          font-weight: bold;
+        }
+        .warning {
+          border: 1px solid #ff000099;
+          background-color: #ff000030;
+          padding-inline: 1rem;
+          border-radius: 5px;
+        }
+        </style>
+  </head>
+  <body>
+    <header>
+      <a href="index.html">Muzyka algorytmiczna</a>
+    </header>
+    <h1>Zajęcia 10 (2025-05-07)</h1>
+
+    <h2 id="todo">Zadanie</h2>
+
+    <h3>Na kolejne zajęcia (2025-05-14)</h3>
+
+		<p>Przygotowanie koncepcji utworu zaliczeniowego.</p>
+
+		<h2>OSC</h2>
+
+		<p>Wyłączenie zapory sieciowej systemu Windows:</p>
+
+		<ul>
+			<li>Wyszukaj w systemie „Zapora Windows Defender z zabezpieczeniami zaawansowanymi”</li>
+			<li>Po otwarciu kliknij „Właściwości Zapory Windows Defender”</li>
+			<li>Zmień Stan zapory na „Wyłącz” i kliknij „Zastosuj”</li>
+		</ul>
+
+		<h2>Wykorzystanie kontrolerów</h2>
+
+		<p>Przykładowe wykorzystanie programu monitorującego wejście w Pythonie, wysyłającego komunikaty do Sonic Pi poprzez OSC.</p>
+
+		<p>Plik <a href="controller.py">controller.py</a></p>
+
+		<p>Uruchomienie:</p>
+
+		<ul>
+			<li>Zainstaluj Pythona</li>
+			<li>W terminalu: <code>pip install python-osc==1.9.3 inputs==0.5</code></li>
+			<li><code>python ./controller.py gamepad</code> dla kontrolera, <code>./controller.py mouse</code> dla myszki</li>
+		</ul>
+
+		<p>Przykład z myszką:</p>
+
+		<pre><code>use_real_time
+
+n = note(:c4)
+a = 0.5
+
+s = synth :dsaw, amp: a, note: n, duration: 10000
+
+loop do
+  x, y = sync "/osc:127.0.0.1:*/mouse/move"
+
+  n += x / 4.0
+  a += y / 100.0
+  if a &lt; 0 then a = 0 end
+  if a &gt; 1 then a = 1 end
+  control s, amp: a, note: n
+end</code></pre>
+
+		<p>Przykład z kontrolerem:</p>
+
+		<pre><code>use_real_time
+
+n = note(:c3)
+
+
+l = synth :saw, note: n, duration: 10000, amp: 0.5
+r = synth :saw, note: n, duration: 10000, amp: 0.5
+
+live_loop :left do
+  f = sync "/osc:127.0.0.1:*/gamepad/left"
+  l.control note: n + 24 * (f[0] / 1024.0)
+end
+
+live_loop :right do
+  f = sync "/osc:127.0.0.1:*/gamepad/right"
+  r.control note: n + 24 * (f[0] / 1024.0)
+end</code></pre>
+
+		<h2>Ableton Link</h2>
+
+		<p>Program synchronizujący co pierwsze uderzenie co 4 uderzenia</p>
+
+		<pre><code>use_real_time
+loop do
+  link 4, 0
+  play :c4
+end</code></pre>
+
+  </body>
+</html>
+
