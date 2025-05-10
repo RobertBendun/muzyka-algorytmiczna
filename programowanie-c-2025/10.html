@@ -447,6 +447,21 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toctitle">Spis treści</div>
 <ul class="sectlevel1">
 <li><a href="#_zadania">Zadania</a></li>
+<li><a href="#_pliki_i_ich_deskryptory">Pliki i ich deskryptory</a>
+<ul class="sectlevel2">
+<li><a href="#_ciekawostka_wykorzystanie_biblioteki_standardowej_do_komunikacji_sieciowej">Ciekawostka: wykorzystanie biblioteki standardowej do komunikacji sieciowej</a></li>
+</ul>
+</li>
+<li><a href="#_pamięć_współdzielona_między_procesami">Pamięć współdzielona między procesami</a>
+<ul class="sectlevel2">
+<li><a href="#_inne_mechanizmy_komunikacji_międzyprocesowej_ipc">Inne mechanizmy komunikacji międzyprocesowej (IPC)</a></li>
+</ul>
+</li>
+<li><a href="#_tablicowa_implementacja_kolejki">Tablicowa implementacja kolejki</a>
+<ul class="sectlevel2">
+<li><a href="#_ciekawostka_implementacja_bufora_cyklicznego_z_użyciem_map_pamięci">Ciekawostka: Implementacja bufora cyklicznego z użyciem map pamięci</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -464,7 +479,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>Próbę otwarcia pliku na wyłączność (syscall <code>open</code>)</p>
 </li>
 <li>
-<p>Jeśli plik istniał i zawiera id innego procesu to zamyka plik i czeka na zakończenie danego procesu (syscall <code>waitpid</code>). Następnie próbuje ponownie otworzyć plik na wyłączność.</p>
+<p>Jeśli plik istniał i zawiera id innego procesu to zamyka plik i czeka na zakończenie danego procesu (np. sprawdzając czy istnieje katalog <code>/proc/{pid}/</code>, wykorzystując wywołanie <code>stat</code>). Następnie próbuje ponownie otworzyć plik na wyłączność.</p>
 </li>
 <li>
 <p>Zapisuje swój identyfikator procesu do pliku i zamyka go</p>
@@ -473,16 +488,288 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </li>
 <li>
-<p><code>shared_queue.c</code></p>
+<p><code>shared_queue.c</code> implementacja mechanizmu współdzielonej kolejki pomiędzy procesami, z wykorzystaniem współdzielonej pamięci. Implementacja kolejki tablicowa.</p>
 </li>
 </ol>
+</div>
+<div class="listingblock">
+<div class="title">Kod testujący zachowanie kolejki</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include "queue.h"
+#include &lt;sched.h&gt; // for sched_yield
+#include &lt;assert.h&gt;
+#include &lt;stdio.h&gt;
+
+// queue is inside shared memory
+void test(struct queue *queue)
+{
+	int pid = fork();
+	if (pid == 0) {
+		int i = 0;
+		for (unsigned i = 0;; ++i) {
+			// TODO: Busy loop is not the best solution
+			while (full(*queue))
+				sched_yield();
+			enqueue(queue, i);
+			printf("Produced: %d\n", i);
+		}
+	} else {
+		for (unsigned i = 0;; i++) {
+			// TODO: Busy loop is not the best solution
+			while (empty(*queue))
+				sched_yield();
+			int read = dequeue(queue);
+			printf("Consumed: %d\n", read);
+			assert(i == read);
+		}
+	}
+  // unreachable
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>W przykładzie wykorzystano liczby unsigned jako dane kolejki by nie doprowadzić do niezdefiniowanego zachowania przez przekroczenie zakresu typu.</p>
+</div>
+<div class="paragraph">
+<p>Dodatkowo wykorzystano funkcję <a href="https://man7.org/linux/man-pages/man2/sched_yield.2.html"><code>sched_yield()</code></a> pozwalającą na oddanie czasu procesora - redukuje to ilość czasu spędzoną w pętli, a przez to umożliwia sprawiedliwszy podział czasu procesora.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_pliki_i_ich_deskryptory">Pliki i ich deskryptory</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Wywołania systemowe:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>open(2)</code> - pozwala na stworzenie i/lub otwarcie pliku (w tym z ekskluzywnym dostępem), zwraca deskryptor pliku;</p>
+</li>
+<li>
+<p><code>close(2)</code> - zamyka deskryptor;</p>
+</li>
+<li>
+<p><code>read(2)</code> - odczytuje maksymalnie <code>n</code> bajtów z danego deskryptora;</p>
+</li>
+<li>
+<p><code>write(2)</code> - zapisuje maksymalnie <code>n</code> bajtów do danego deskryptora.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><em>Deskryptor pliku</em> to unikalny dla każdego procesu identyfikator do zasobu, takiego jak: plik, pipe czy socket.
+Każdy proces domyślnie ma 3 podstawowe deskryptory: 0 dla standardowego wejścia, 1 dla standardowego wyjścia, 2 dla standardowego wyjścia błędów.</p>
+</div>
+<div class="listingblock">
+<div class="title">Hello world z użyciem <code>write</code></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;assert.h&gt;
+#include &lt;string.h&gt;
+#include &lt;unistd.h&gt;
+
+int main()
+{
+	char const* msg = "hello, world";
+	int written;
+	written = write(STDOUT_FILENO, msg, strlen(msg));
+	assert(written == strlen(msg));
+	return 0;
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Interakcja biblioteki standardowej i deskryptorów</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;assert.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;fcntl.h&gt;
+
+int main()
+{
+	int fd = open("example.txt", O_WRONLY|O_CREAT|O_TRUNC);
+	assert(fd &gt;= 0);
+
+	char const* msg = "Written using syscalls\n";
+	int written = write(fd, msg, strlen(msg));
+	assert(written == strlen(msg));
+
+
+	// Create stream for this file descriptor using C standard library
+	FILE *f = fdopen(fd, "w");
+	assert(f != NULL);
+
+	fprintf(f, "Written using libc\n");
+	fclose(f);
+	return 0;
+}</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_ciekawostka_wykorzystanie_biblioteki_standardowej_do_komunikacji_sieciowej">Ciekawostka: wykorzystanie biblioteki standardowej do komunikacji sieciowej</h3>
+<div class="paragraph">
+<p>Dzięki możliwości adaptacji deskryptorów plików przez bibliotekę C, można łatwo stworzyć prostą bibliotekę, która <a href="https://github.com/kiryk/ftcp">ułatwia programowanie sieciowe</a>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_pamięć_współdzielona_między_procesami">Pamięć współdzielona między procesami</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Wykorzystywany jest mechanizm przypisanego do pamięci pliku z użyciem funkcji <code>mmap</code>.
+Ponieważ procesy współdzielą plik do którego przypisana jest pamięć, to stan tej pamięci jest pomiędzy nimi spójny (pomijając możliwe problemy współbieżnego zapisu i odczytu).</p>
+</div>
+<div class="paragraph">
+<p>Poza otwarciem pliku wykorzystywane jest <code>ftruncate</code> do tego by zapewnić odpowiedni rozmiar pliku - pamięć większa od rozmiaru pliku <em>nie będzie współdzielona</em> między procesami.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+#include &lt;assert.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;sys/mman.h&gt;
+
+int main()
+{
+    int fd;
+    if ((fd = open("example.txt", O_RDWR|O_CREAT)) &lt; 0) {
+        perror("błąd");
+    }
+
+    ftruncate(fd, sizeof(int)*16);
+
+    int* p = (int*)mmap(
+        NULL,
+        sizeof(int)*16,
+        PROT_READ | PROT_WRITE,
+        MAP_SHARED,
+        fd,
+        0);
+    if (p == NULL) {
+        close(fd);
+        perror("mmap");
+        return 1;
+    }
+
+    int pid = fork();
+    if (pid == 0) {
+        for (int i = 0;; ++i) {
+            p[0] = i;
+        }
+    } else {
+        int prev = p[0];
+
+        for (;;) {
+            int x = p[0];
+            if (x != prev) {
+                printf("Changed: %d\n", x);
+                prev = x;
+            }
+        }
+    }
+
+    munmap(p, sizeof(int)*16);
+    close(fd);
+    return 0;
+}</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_inne_mechanizmy_komunikacji_międzyprocesowej_ipc">Inne mechanizmy komunikacji międzyprocesowej (IPC)</h3>
+<div class="paragraph">
+<p>Podstawowe mechanizmy IPC w ramach systemu Linux: <a href="https://www.man7.org/linux/man-pages/man7/sysvipc.7.html"><code>map sysvipc(7)</code></a>.
+Omówienie <a href="https://en.wikipedia.org/wiki/Inter-process_communication">dostępne jest też na Wikipedii</a>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_tablicowa_implementacja_kolejki">Tablicowa implementacja kolejki</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Do implementacji kolejki wykorzystany zostanie struktura <a href="https://en.wikipedia.org/wiki/Circular_buffer">bufora cyklicznego</a>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<a class="image" href="https://en.wikipedia.org/wiki/File:Circular_Buffer_Animation.gif"><img src="https://upload.wikimedia.org/wikipedia/commons/f/fd/Circular_Buffer_Animation.gif" alt="Circular Buffer Animation"></a>
+</div>
+<div class="title">Rysunek 1. Wizualizacja implementacji bufora cyklicznego (z Wikipedii)</div>
+</div>
+<div class="paragraph">
+<p>Implementacja kolejki z użyciem bufora cyklicznego zakłada posiadanie tablicy <code>n</code>-elementowej o elementach typu <code>T</code>, indeks odczytu (<code>read</code>) i indeks zapisu (<code>write</code>).</p>
+</div>
+<div class="paragraph">
+<p>Wspiera następujące operacje dla wybranego typu <code>T</code>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>void enqueue(struct queue *queue, T value);</code> - przypisuje do elementu o indeksie <code>write</code> element <code>value</code>, a następnie inkrementuje indeks <code>write</code> modulo rozmiar tablicy <code>n</code></p>
+</li>
+<li>
+<p><code>T dequeue(struct queue *queue);</code> - zwraca element o indeksie <code>read</code>, a następnie inkrementuje indeks <code>read</code> modulo rozmiar tablicy <code>n</code></p>
+</li>
+<li>
+<p><code>bool empty(struct queue);</code> - kolejka jest pusta jeśli indeksy odczytu i zapisu są sobie równe</p>
+</li>
+<li>
+<p><code>bool full(struct queue);</code> - kolejka jest pełna jeśli kolejny indeks zapisu (<code>(write+1)%n</code>) jest równy indeksowi odczytu</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Operacje <code>enqueue</code> i <code>dequeue</code> powinny być chronione przed odpowiednio zapisem do pełnej kolejki i pobraniem elementu z pustej kolejki.</p>
+</div>
+<div class="paragraph">
+<p>Przykładowy kod testujący implementację (zakładający, że strutuka <code>queue</code> zawiera już w sobie bufor kolejki przez co nie jest potrzebna dynamiczna alokacja):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include "queue.h"
+
+int main()
+{
+  struct queue queue = {};
+  int data, i;
+
+  assert(empty(queue));
+  enqueue(&amp;queue, 10);
+  data = dequeue(&amp;queue);
+  assert(data == 10);
+  assert(empty(queue));
+
+  for (i = 0; !full(queue); ++i) {
+    enqueue(&amp;queue, i);
+  }
+
+  for (; !empty(queue); --i) {
+    dequeue(&amp;queue);
+  }
+  assert(i == 0);
+  return 0;
+}</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_ciekawostka_implementacja_bufora_cyklicznego_z_użyciem_map_pamięci">Ciekawostka: Implementacja bufora cyklicznego z użyciem map pamięci</h3>
+<div class="paragraph">
+<p>Artykuł <a href="https://www.computerenhance.com/p/powerful-page-mapping-techniques">Powerful Page Mapping Techniques</a> omawia możliwość tworzenia bufora cyklicznego z wykorzystaniem wirtualnej pamięci.
+Zaprezentowany jest przykład dla systemu Windows.</p>
+</div>
+<div class="paragraph">
+<p>Rozwiązanie dostępne jest również w ramach systemu Linux: <a href="https://lo.calho.st/posts/black-magic-buffer/">Using black magic to make a fast circular buffer</a>.</p>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Ostatnio zmodyfikowany 2025-05-05 17:17:40 +0200
+Ostatnio zmodyfikowany 2025-05-10 17:11:13 +0200
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
