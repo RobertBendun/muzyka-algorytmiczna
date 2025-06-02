@@ -77,22 +77,100 @@ body {
 			</tr>
 			<tr>
 				<th scope=row><a href="09.html">09</a></th>
+				<td><a href="09.html#_zadania">Zbiór 9</a></td>
+				<td>Procesy, podprocesy, fork, wait, ścieżki</a></td>
 			</tr>
 			<tr>
 				<th scope=row><a href="10.html">10</a></th>
+				<td><a href="10.html#_zadania">Zbiór 10</a></td>
+				<td>Deskryptory plików, komunikacja międzyprocesowa (IPC), pamięć współdzielona, bufor cykliczny</td>
 			</tr>
 			<tr>
 				<th scope=row><a href="11.html">11</a></th>
+				<td><a href="11.html#_zadania">Zbiór 11</a></td>
+				<td>Wątki, muteksy, problemy współbieżności, biblioteka pthread</td>
 			</tr>
 			<tr>
 				<th scope=row><a href="12.html">12</a></th>
+				<td><a href="12.html#_zadania">Zbiór 12</a></td>
+				<td>Sygnały, typy atomowe, man, cppreference</td>
 			</tr>
 			<tr>
 				<th scope=row><a href="13.html">13</a></th>
+				<td><a href="13.html#_zadania">Zbiór 13</a></td>
+				<td>Integracja Python - C; mechanizm dynamicznego ładowania zależności; biblioteki statyczne vs dynamiczne</td>
+			</tr>
+			<tr>
+				<th scope=row><a href="14.html">14</a></th>
+				<td><a href="14.html#_zadania">Zbiór 14</a></td>
+				<td>Polimorfizm cz. 2</td>
 			</tr>
 		</table>
 
 		<p>Program tworzony w ramach zajęć 4, 5, 6: <a href="magick.c">magick.c</a></p>
+
+		<h2>Projekt zaliczeniowy (termin 2025-06-23)</h2>
+
+		<div style="text-align: left">
+			<p>Uproszczona implementacja systemu kompilacji projektu <code>redo</code>.</p>
+
+			<h3>Wymagania</h3>
+
+			<ol>
+				<li>Polecenia <code>redo</code> i <code>redo-ifchange</code> obsługuje jeden plik wykonywalny -  w zależności od nazwy programu wykonujący różne akcje</li>
+				<li>Polecenie <code>redo &lt;cel&gt;</code> uruchamia skrypt <code>&lt;cel&gt;.do</code> poprzez domyślny shell (<code>sh</code>), przekazując jako argumenty do skryptu <code>&lt;cel&gt;.do</code> kolejno:
+					<ol>
+						<li><code>&lt;cel&gt;</code> - nazwa pliku wynikowego</li>
+						<li><code>&lt;cel&gt;</code> bez rozszerzenia (jeśli takie było)</li>
+						<li>nazwę pliku tymczasowego będącego plikiem wynikowym skryptu (np. <code>&lt;cel&gt;---redoing</code>) - nazywane dalej tymczasowym plikiem wynikowym.</li>
+					</ol>
+				</li>
+				<li>Shell uruchomiony jest w trybie kończącym działanie po napotkaniu polecenia zakończonego błędem (parametr <code>-e</code> programu <code>sh</code>).</li>
+				<li>Standardowe wyjście uruchomionego skryptu przekierowane jest do tymczasowego pliku wynikowego.</li>
+				<li>Jeśli skrypt zakończy się pomyślnie, plik tymczasowy wynikowy atomicznie staje się plikiem wynikowym (<a href="https://www.man7.org/linux/man-pages/man2/rename.2.html">rename(2)</a>).
+					W przypadku niepowodzenia skryptu plik tymczasowy wynikowy jest usuwany (<a href="https://www.man7.org/linux/man-pages/man2/unlink.2.html">unlink(2)</a>)</li>
+				<li>Polecenie <code>redo-ifchange &lt;źródła&gt;...</code>, wykorzystywane w ramach skryptu <code>.do</code> zwraca fałsz, jeśli cel jest aktualny w kontekście źródeł (przerywając tym samym wykonanie skryptu <code>.do</code>). W innym przypadku zwraca prawdę.</li>
+				<li>Aktualność pliku jest wyznaczana na podstawie:
+					<ul>
+						<li>Wariant A) Czasu modyfikacji pliku: plik jest aktualny jeśli jego czas modyfikacji jest nowszy niż czas modyfikacji jego źródeł</li>
+						<li>Wariant B) Wyników funkcji skrótu zapisanych w pliku <code>.redo</code> (i potencjalnie dodatkowych metadanych jak rozmiar pliku).
+							Osoba studencka może zaproponować własny system.</li>
+					</ul>
+				</li>
+				<li>Jeśli plik wynikowy nie istnieje to <code>redo-ifchange</code> powinno automatycznie uznać, że jest nieaktualny</li>
+			</ol>
+
+			<h3>Punktacja</h3>
+
+			<p>Warunkiem otrzymania punktów jest dodanie kodu źródłowego do repozytorium Git oraz prezentacja projektu osobie prowadzącej na zajęciach / poinformowanie o wykonaniu projektu mailowo.</p>
+
+			<ol>
+				<li>(5pkt) Implementacja polecenia redo</li>
+				<li>(4pkt) Implementacja polecenia redo-ifchange</li>
+				<li>(1pkt) Uruchomiony skrypt przez redo ma automatycznie rozszerzoną zmienną środowiskową PATH, tak by mógł uruchomić <code>redo-ifchange</code> bez bezpośredniego wskazywania ścieżki</li>
+				<li>(1pkt) Wykorzystno funkcje fork/exec, a nie np. system do uruchomienia skryptu</li>
+				<li>(3pkt) Mechanizm określający potrzebę przebudowy celu wykorzystuje funkcje hashujące oraz bazę hashy w pliku <code>.redo</code> lub autorski system rozwiązywania aktualizacji</li>
+			</ol>
+
+			<h3>Porady</h3>
+
+			<ul>
+				<li>Aktualny cel można przekazać poprzez funkcję <code>setenv(3)</code> jako zmienną środowiskową, np. <code>setenv("REDO_TARGET", "foo")</code> w <code>redo</code>, które później będzie odczytane w <code>redo-ifchange</code>: <code>getenv("REDO_TARGET")</code>.</li>
+				<li>Przekierowanie standardowego wyjścia do pliku wynikowego można osiągnąć poprzez zamknięcie standardowego wyjścia <code>close(STDOUT_FILENO) </code>, a następnie otworzenie pliku <code>open(...)</code>. Należy koniecznie pamiętać o uprawnieniach przekazywanych do funkcji <code>open(2)</code>!</li>
+				<li>Polecenia <code>redo</code> oraz <code>redo-ifchange</code> są w klasie programów, w której nie musimy dealokować każdej zaalokowanej pamięci - ich żywot jest raczej krótki.</li>
+
+				<li>Plik nazwany <code>.env</code> nie zawiera rozszerzenia! Podobnie katalog <code>.</code></li>
+			</ul>
+
+			<h3>Źródła</h3>
+			<ul>
+				<li><a href="https://cr.yp.to/redo.html">Oryginalna propozycja od djb</a></li>
+				<li><a href="https://jdebp.uk/FGA/introduction-to-redo.html">„Introduction of redo” od Jonathan de Boyne Pollard</a> - szerszy writeup</li>
+				<li><a href="https://redo.readthedocs.io/">Obszerna dokumentacja edycji Pythonowej</a></li>
+				<li><a href="http://www.goredo.cypherpunks.su/Usage-rules.html">Opisane działanie wersji zapisanej w Go</a></li>
+				<li><a href="https://apenwarr.ca/log/20181113">„mtime comparison considered harmful”</a></li>
+			</ul>
+		</div>
 
 		<h2>Zasady zaliczenia</h2>
 
