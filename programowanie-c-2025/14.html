@@ -447,6 +447,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toctitle">Spis treści</div>
 <ul class="sectlevel1">
 <li><a href="#_zadania">Zadania</a></li>
+<li><a href="#_przykład_vtable">Przykład <code>vtable</code></a></li>
 </ul>
 </div>
 </div>
@@ -485,10 +486,74 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_przykład_vtable">Przykład <code>vtable</code></h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+#include &lt;math.h&gt;
+
+typedef struct shape {
+    union
+    {
+        struct
+        {
+            float radius;
+        };
+
+        struct
+        {
+            float width, height;
+        };
+    };
+
+// vtable:
+    float (*area)(struct shape *this);
+    void (*print)();
+} shape;
+
+float circle_area(struct shape *this)
+{
+    return M_PI * this-&gt;radius * this-&gt;radius;
+}
+
+shape circle(float r)
+{
+    struct shape s;
+    s.radius = r;
+    s.area = circle_area;
+    return s;
+}
+
+float rect_area(struct shape *this)
+{
+    return this-&gt;width * this-&gt;height;
+}
+
+shape rectangle(float w, float h)
+{
+    struct shape s;
+    s.width = w;
+    s.height = h;
+    s.area = rect_area;
+    return s;
+}
+
+int main()
+{
+    shape s = rectangle(10, 20);
+    printf("Area is: %f\n", s.area(&amp;s));
+    return 0;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Ostatnio zmodyfikowany 2025-06-02 16:19:11 +0200
+Ostatnio zmodyfikowany 2025-06-26 11:41:38 +0200
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
