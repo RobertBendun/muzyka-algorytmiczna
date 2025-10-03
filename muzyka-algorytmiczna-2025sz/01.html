@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Zajęcia 1 | Muzyka algorytmiczna</title>
+        <style>
+        html {
+            color-scheme: light dark;
+        }
+        body {
+            font-family: system-ui, sans-serif;
+            line-height: 1.6;
+            margin-inline: auto;
+            max-width: 80ch;
+        }
+        h2 {
+          border-top: 1px solid;
+          border-bottom: 1px solid;
+        }
+        </style>
+  </head>
+  <body>
+		<header>
+			<a href="index.html">Muzyka algorytmiczna</a>
+		</header>
+    <h1>Zajęcia 1 (2025-10-03)</h1>
+
+		<h2>Poruszone zagadnienia</h2>
+
+		<ul>
+			<li>Operacja modulo (reszty z dzielenia)</li>
+			<li>Liczby pseudolosowe</li>
+			<li>Podstawy środowiska Sonic Pi</li>
+			<li>Inne środowiska muzyki algorytmicznej</li>
+		</ul>
+
+
+		<h2>Odtwarzanie prostych dźwięków</h2>
+
+		<p>Akord C-dur:</p>
+
+<pre><code>play :c4
+play :g4
+play :e4</code></pre>
+
+		<p>Losowy dźwięk od :c4 do :c5 (bez :c5)</p>
+
+<pre><code>play(60 + rand_i(12))</code></pre>
+
+  </body>
+</html>
+
